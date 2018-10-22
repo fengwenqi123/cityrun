@@ -157,7 +157,6 @@ export default {
     },
     wxGetLocation(){
       let _this = this;
-      // this.store.commit('submitAddress',10)
       wx.getLocation({
         // type: 'wgs84',
         success: function (res) {
@@ -179,7 +178,7 @@ export default {
               var obj={}
               obj.address= _this.address
               obj.city=res.data.result.address_component.city
-              _this.store.commit('submitAddress',obj)
+              _this.$store.commit('submitAddress',obj)
             }
           });
         },

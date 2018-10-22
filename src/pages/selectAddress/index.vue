@@ -90,11 +90,10 @@ export default {
               },
               url:'https://apis.map.qq.com/ws/geocoder/v1/?location='+latitude+','+longitude+'&key=MVGBZ-R2U3U-W5CVY-2PQID-AT4VZ-PDF35',
               success: function(res) {
-                _this.address=res.data.result.address_component.street_number
                 var obj={}
-                obj.address= _this.address
+                obj.address= res.data.result.address_component.street_number
                 obj.city=res.data.result.address_component.city
-                _this.store.commit('submitAddress',obj)
+                _this.$store.commit('submitAddress',obj)
               }
             });
           },
@@ -106,11 +105,8 @@ export default {
     }
   },
   computed:{
-    city(){
-      return this.store.getters.getCity
-    },
     address(){
-      return this.store.getters.getAddress
+      return this.$store.state.home.address
     }
   },
   mounted() {

@@ -1,6 +1,10 @@
-/** Created by guangqiang on 2018-09-14 20:16:03 */
+/** Created by guangqiang on 2018-09-15 14:28:08 */
 import Vue from 'vue'
-import App from '.'
+import App from './index'
+import store from '@/store'
 
-const app = new Vue(App)
+const app = new Vue({
+  store,
+  ...App
+})
 app.$mount()

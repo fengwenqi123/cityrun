@@ -3,7 +3,7 @@
     <div class="header-c">
       <img src="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132" alt="">
       <div class="info-c">
-        <span class="name">光强</span>
+        <span class="name">fengwenqi</span>
         <span class="phone">15214313256</span>
       </div>
     </div>
@@ -14,7 +14,8 @@
           <span class="title">{{item.title}}</span>
           <span class="amount" v-if="item.amount">{{item.amount}}<span>张</span></span>
         </div>
-        <i class='icon mt-arrow-right-o'></i>
+        <i class='icon mt-arrow-right-o' v-if="!item.phone"></i>
+        <i  v-if="item.phone">{{item.phone}}</i>
       </div>
     </div>
     <div class="btn" @click="logoutClick">退出账号</div>
@@ -27,32 +28,37 @@ export default {
     return {
       itemList: [
         {
-          title: '美团红包',
-          icon: 'mt-red-packet-o',
-          path: '/pages/redPacket/main',
-          amount: 4
-        }, 
-        {
-          title: '商家代金券',
-          icon: 'mt-coupon-o',
-          path: '/pages/couponList/main',
-          amount: 10
-        },
-        {
           title: '我的地址',
           icon: 'mt-my-location-o',
           path: '/pages/addressList/main'
         },
         {
-          title: '邀请有奖',
-          icon: 'mt-gift-o'
-        },
-        {
-          title: '客服中心',
+          title: '在线客服',
           icon: 'mt-customer-service-o'
         },
         {
-          title: '帮助和反馈',
+          title: '客服热线',
+          icon: 'mt-customer-service-o',
+          phone:'0571-88118899'
+        },
+        // {
+        //   title: '美团红包',
+        //   icon: 'mt-red-packet-o',
+        //   path: '/pages/redPacket/main',
+        //   amount: 4
+        // },
+        // {
+        //   title: '商家代金券',
+        //   icon: 'mt-coupon-o',
+        //   path: '/pages/couponList/main',
+        //   amount: 10
+        // },
+        // {
+        //   title: '邀请有奖',
+        //   icon: 'mt-gift-o'
+        // },
+        {
+          title: '意见反馈',
           icon: 'mt-help-o',
           path: '/pages/feedback/main'
         },

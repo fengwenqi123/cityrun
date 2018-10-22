@@ -8,7 +8,7 @@ import * as util from './utils'
 Vue.config.productionTip = false
 App.mpType = 'app'
 Vue.prototype.util = util
-Vue.prototype.store = store
+// Vue.prototype.$store = store
 
 const app = new Vue({
   store,
