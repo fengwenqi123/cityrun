@@ -64,13 +64,43 @@
         </div>
       </scroll-view>
     </div>
+      <div class="comment-c" v-if="pageIndex === 1">
+      <div class="score">
+        <div class="num">
+          <p class="p1">4.1</p>
+          <p class="p2">商家评分</p>
+        </div>
+        <div class="star">
+          <i-rate
+            :value="starIndex">
+          </i-rate>
+        </div>
+      </div>
+        <div class="comment-list" v-for="(item,index) in pingfenList">
+          <div class="top">
+            <div class="top_l">
+              <p>{{item.name}}</p>
+              <p><i-rate :value="item.stat"></i-rate></p>
+            </div>
+            <div class="top_r">
+              <div class="time">{{item.time}}</div>
+            </div>
+          </div>
+          <div class="main">
+           {{item.content}}
+          </div>
+          <div class="pic" v-if="item.img.length>0">
+            <img v-for="(item1,index1) in item.img" :src="item1" alt="">
+          </div>
+        </div>
+      </div>
     </scroll-view>
-    <i-tabs :current="current" @change="handleChange" v-if="flag" class="tabs">
+    <i-tabs :current="current" @change="handleChange" v-if="flag&&pageIndex === 0" class="tabs">
       <i-tab key="tab1" title="菜单"></i-tab>
       <i-tab key="tab2" title="评价"></i-tab>
       <i-tab key="tab3" title="商家"></i-tab>
     </i-tabs>
-      <scroll-view class="list-l list-l-flxed" v-if="flag" :scroll-y="true">
+      <scroll-view class="list-l list-l-flxed" v-if="flag&&pageIndex === 0" :scroll-y="true">
         <div class="l-item" :class="{active: index === tagIndex}" v-for="(item, index) in foods" :key="index" @click="categoryClick(item, index)">
           <img :src="item.icon" v-if="item.icon.length > 0">
           <span>{{item.name}}</span>
@@ -115,10 +145,40 @@ export default {
       tagIndex: 0,
       pageIndex: 0,
       current:'tab1',
+      starIndex:4,
       left: '40rpx',
       isActive:false,
       flag:false,
-      stars: [1, 2, 3, 4]
+      src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+      stars: [1, 2, 3, 4],
+      pingfenList:[
+        {
+          name:'岁月清风',
+          id:1,
+          stat:4,
+          time:'2018.09.30',
+          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
+          img:['http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg']
+        },
+        {
+          name:'岁月清风',
+          id:1,
+          stat:4,
+          time:'2018.09.30',
+          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
+          img:['http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+            'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+            'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg']
+        },
+        {
+          name:'岁月清风',
+          id:1,
+          stat:4,
+          time:'2018.09.30',
+          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
+          img:[]
+        }
+      ]
     }
   },
   computed: {
@@ -524,244 +584,46 @@ export default {
     }
   }
   .comment-c {
-    .comment-sc {
+    .score{
+      height: 164rpx;
       display: flex;
-      position: fixed;
-      top: 220rpx;
-      flex-direction: column;
-      height: 100%;
-      .comment-header {
-        margin-top: 20rpx;
-        display: flex;
-        align-items: center;
-        height: 140rpx;
-        background-color: white;
-        width: 100%;
-        justify-content: space-around;
-        .h-l {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          .score {
-            font-size: 50rpx;
-            color: $theme-color;
-          }
-          .title {
-            font-size: 20rpx;
-            color: $textBlack-color;
-          }
+      margin-left: 100rpx;
+      align-items: center;
+      .num{
+        .p1{
+          color: #8EE5EE;
+          font-size: 56rpx;
         }
-        .h-m {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: space-around;
-          .m-t {
-            display: flex;
-            align-items: center;
-            .title {
-              font-size: 20rpx;
-              color: $textBlack-color;
-            }
-            .star-c {
-              display: flex;
-              align-items: center;
-              margin: 0 30rpx;
-              i {
-                color: $theme-color;
-                font-size: 24rpx;
-              }
-            }
-            .score {
-              font-size: 24rpx;
-              color: $theme-color;
-            }
-          }
-          .m-b {
-            @extend .m-t;
-          }
-        }
-        .line {
-          width: 2rpx;
-          height: 80rpx;
-          background-color: $spLine-color;
-          margin-left: 30rpx;
-        }
-        .h-r {
-          @extend .h-l;
-          .score {
-            color: $textDarkGray-color
-          }
+        .p2{
+          font-size: 24rpx;
         }
       }
-      .comment-tags {
-        margin-top: 20rpx;
-        display: flex;
-        background-color: white;
-        padding: 30rpx;
-        width: auto;
-        flex-wrap: wrap;
-        padding-top: 12rpx;
-        .tag-item {
-          background-color: white;
-          border: 2rpx solid  $spLine-color;
-          padding: 0 16rpx;
-          margin-right: 20rpx;
-          margin-top: 18rpx;
-          align-items: center;
-          justify-content: center;
-          line-height: 50rpx;
-          span {
-            font-size: 24rpx;
-            color: $textDarkGray-color;
-          }
-        }
-        .tag-item:first-child {
-          background-color: #FFF7E2;
-          border: 2rpx solid#F0EDBA;
-          span {
-            color: #E7AC40;
-          }
-        }
+      .star{
+        margin-top: 10rpx;
+        margin-left: 150rpx;
       }
-      .comment-list {
+    }
+    .comment-list{
+      padding: 36rpx 60rpx 26rpx 60rpx;
+      border-top: 1px solid #e6e6e6;
+      .top{
+        display: flex;
+        justify-content:space-between;
+      }
+      .main{
+        margin-top: 28rpx;
+      }
+      .pic{
         margin-top: 20rpx;
         display: flex;
-        flex-direction: column;
-        .item-c {
-          display: flex;
-          overflow: hidden;
-          background-color: white;
-          border-bottom: 2rpx solid $spLine-color;
-          .item-l {
-            margin-left: 30rpx;
-            margin-top: 20rpx;
-            img {
-              width: 70rpx;
-              height: 70rpx;
-              border-radius: 35rpx;
-            }
-          }
-          .item-r {
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            margin-left: 20rpx;
-            margin-top: 20rpx;
-            margin-right: 30rpx;
-            flex: 1;
-            .h-r {
-              display: flex;
-              flex-direction: column;
-              flex: 1;
-              .r-t {
-                display: flex;
-                justify-content: space-between;
-                .name {
-                  font-size: 32rpx;
-                  color: $textBlack-color;
-                }
-                .date {
-                  font-size:20rpx;
-                  color: $textGray-color;
-                }
-              }
-              .r-b {
-                display: flex;
-                align-items: center;
-                .b-l {
-                  display: flex;
-                  align-items: center;
-                  i {
-                    font-size: 20rpx;
-                    color: $theme-color;
-                  }
-                }
-                .b-r {
-                  font-size:20rpx;
-                  color: $textGray-color;
-                  margin-left: 20rpx;
-                }
-              }
-            }
-            .r-comtent {
-              display: flex;
-              margin-top: 10rpx;
-              span {
-                font-size: 24rpx;
-                color: $textBlack-color;
-              }
-            }
-            .r-imgs {
-              display: flex;
-              flex-direction: row;
-              margin-top: 10rpx;
-              .single {
-                margin-top: 10rpx;
-                img {
-                  width: 300rpx;
-                  height: 300rpx;
-                }
-              }
-              .double {
-                img {
-                  width: 160rpx;
-                  height: 160rpx;
-                  margin-right: 16rpx;
-                }
-              }
-              .four {
-                display: flex;
-                width: 300rpx;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                img {
-                  width: 140rpx;
-                  height: 140rpx;
-                  margin: 10rpx 0;
-                }
-              }
-            }
-            .food-name {
-              display: flex;
-              flex-direction: column;
-              margin-top: 10rpx;
-              .name-t {
-                display: flex;
-                i {
-                  font-size: 24rpx;
-                  color: $textGray-color;
-                }
-                span {
-                  font-size: 24rpx;
-                  color: #777D8A;
-                  margin-left: 20rpx;
-                }
-              }
-              .name-b {
-                @extend .name-t;
-                margin-top: 8rpx;
-                span {
-                  color: $textBlack-color;
-                }
-              }
-            }
-            .reply-c {
-              display: flex;
-              background-color: #F4F4F4;
-              padding: 20rpx 14rpx;
-              margin-top: 20rpx;
-              margin-bottom: 30rpx;
-              span {
-                color: $textGray-color;
-                font-size: 24rpx;
-              }
-            }
-          }
+        justify-content:flex-start;
+        img{
+          margin-left: 10rpx;
+          width: 200rpx;
+          height: 200rpx;
         }
-        .item-c:last-child {
-          margin-bottom: 220rpx;
+        img:nth-child(1){
+          margin: 0rpx;
         }
       }
     }

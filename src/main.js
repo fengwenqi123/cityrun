@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 import * as util from './utils'
+import '@/assets/index.scss'
 
 Vue.config.productionTip = false
 App.mpType = 'app'

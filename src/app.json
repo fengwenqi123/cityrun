@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/shoppingCart1/main",
     "pages/home/main",
     "pages/shoppingCart/main",
-    "pages/shoppingCart1/main",
     "pages/submitOrder/main",
     "pages/me/main",
     "pages/expiredRedPacket/main",
