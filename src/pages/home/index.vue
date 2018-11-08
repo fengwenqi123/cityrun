@@ -153,7 +153,7 @@ export default {
       wx.navigateTo({url: '/pages/searchList/main'})
     },
     shoppingCartClick() {
-      wx.navigateTo({url: '/pages/shoppingCart/main'})
+      wx.navigateTo({url: '/pages/shoppingCart1/main'})
     },
     wxGetLocation(){
       let _this = this;
@@ -175,6 +175,7 @@ export default {
               // _this.district = res.data.result.address_component.district
               //_this.count();
               _this.address=res.data.result.address_component.street_number
+              console.log(res.data)
               var obj={}
               obj.address= _this.address
               obj.city=res.data.result.address_component.city

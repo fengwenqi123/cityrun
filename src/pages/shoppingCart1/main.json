@@ -1,0 +1,11 @@
+{
+  "navigationBarBackgroundColor": "white",
+  "navigationBarTextStyle": "black",
+  "navigationBarTitleText": "test",
+  "backgroundColor": "#eeeeee",
+  "backgroundTextStyle": "light",
+  "usingComponents": {
+    "i-tabs": "../../../static/iview/tabs/index",
+    "i-tab": "../../../static/iview/tab/index"
+  }
+}
