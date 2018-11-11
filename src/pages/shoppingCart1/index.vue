@@ -94,8 +94,54 @@
           </div>
         </div>
       </div>
+      <div class="shop-info"  v-if="pageIndex === 2">
+        <div class="top">
+          <h4>活动与公告</h4>
+          <div>
+            <p v-for="(item,index) in tags" :key="index">
+              <i-tag
+                class="i-tags"
+                :name="item.type"
+                :color="item.type==='满'?'green':item.type==='新'?'red':'yellow'">
+                {{item.type}}
+              </i-tag>
+              {{item.name}}
+            </p>
+            <div class="Notice">
+              公告：中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配
+            </div>
+          </div>
+        </div>
+        <div class="info">
+          <h4>商家信息</h4>
+          <ul class="clearfix">
+            <li>
+              <span>商家名称</span>
+              <span>重庆麻辣烫</span>
+            </li>
+            <li>
+              <span>商家品类</span>
+              <span>美食</span>
+            </li>
+            <li>
+              <span>商家地址</span>
+              <span>浙江省杭州市余杭区五常街道瑞谷中心6装206室</span>
+            </li>
+            <li>
+              <span>商家电话</span>
+              <span>18758859435</span>
+            </li>
+          </ul>
+        </div>
+        <div class="pic">
+          <h4>商家图片</h4>
+          <div class="shipPic">
+            <img v-for="(item,index) in shipPic" :key="index" :src="item" alt="">
+          </div>
+        </div>
+      </div>
     </scroll-view>
-    <i-tabs :current="current" @change="handleChange" v-if="flag&&pageIndex === 0" class="tabs">
+    <i-tabs :current="current" @change="handleChange" v-if="flag" class="tabs">
       <i-tab key="tab1" title="菜单"></i-tab>
       <i-tab key="tab2" title="评价"></i-tab>
       <i-tab key="tab3" title="商家"></i-tab>
@@ -169,15 +215,29 @@ export default {
           img:['http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
             'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
             'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg']
+        }
+      ],
+      tags:[
+        {
+          type:'满',
+          name:'满20减5，满35减10，满40减15，满100减30',
+          id:1
         },
         {
-          name:'岁月清风',
-          id:1,
-          stat:4,
-          time:'2018.09.30',
-          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
-          img:[]
+          type:'新',
+          name:'本店新客立减2元',
+          id:2
+        },
+        {
+          type:'折',
+          name:'单品折扣',
+          id:3
         }
+      ],
+      shipPic:[
+        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
       ]
     }
   },
@@ -241,6 +301,9 @@ export default {
       }
     }
   },
+  onShow(){
+    this.flag=false
+  },
   methods: {
     ...mapMutations("shoppingCart", ["changeReduceFeeDataMut", "changeSkuModalMut", "changeItemModalMut"]),
     ...mapActions("shoppingCart", ["getMenuDataAction", "getCommentDataAction", "getCategoryMenuDataAction", "addItemAction", "reduceItemAction", "closeShoppingCartAction", "selectSkuAction", "changeSkuDataMut", "attrSelectAction", "changeSkuModalDataAction", "previewItemAction"]),
@@ -252,7 +315,7 @@ export default {
     },
     scroll(e){
       console.log(e.mp.detail.scrollTop)
-      if(e.mp.detail.scrollTop>=214){
+      if(e.mp.detail.scrollTop>=225){
         this.flag=true
       }else{
         this.flag=false
@@ -628,127 +691,57 @@ export default {
       }
     }
   }
-  .shop-info {
-    display: flex;
-    position: fixed;
-    top: 220rpx;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    .address {
-      display: flex;
-      align-items: center;
-      height: 70rpx;
-      margin-top: 20rpx;
-      background-color: white;
-      padding: 0 20rpx;
-      i {
-        font-size: 38rpx;
-        color: $textGray-color;
+  .shop-info{
+    .top{
+      background: #fff;
+      padding: 40rpx;
+      h4{
+        font-weight: bold;
+        font-size: 32rpx;
       }
-      i:last-child {
-        color: $textBlack-color;
-      }
-      span {
-        flex: 1;
-        margin: 0 20rpx;
-        font-size: 24rpx;
-        color: $textBlack-color;
-      }
-    }
-    .archive {
-      @extend .address;
-      i:last-child {
-        font-size: 24rpx;
-        color: $textGray-color;
-      }
-    }
-    .delivery {
-      display: flex;
-      flex-direction: column;
-      margin-top: 20rpx;
-      background-color: white;
-      padding: 0 16rpx;
-      .top {
-        display: flex;
-        align-items: center;
-        height: 80rpx;
-        padding-left: 10rpx;
-        border-bottom: 2rpx solid $spLine-color;
-        i {
-          font-size: 32rpx;
-          color: $textGray-color;
+      div{
+        p{
+          margin-top: 26rpx;
         }
-        span {
+        .Notice{
+          margin-top: 26rpx;
           font-size: 24rpx;
-          color: $textBlack-color;
-          margin: 0 20rpx;
         }
-      }
-      .btm {
-        @extend .top;
-        border-bottom: 0 solid $spLine-color;
       }
     }
-    .service {
-      display: flex;
-      flex-direction: column;
-      margin-top: 20rpx;
-      background-color: white;
-      padding: 0 16rpx;
-      .top {
-        display: flex;
-        align-items: center;
-        height: 80rpx;
-        padding-left: 14rpx;
-        border-bottom: 2rpx solid $spLine-color;
-        i {
-          font-size: 28rpx;
-          color: $textGray-color;
-        }
-        .l {
-          font-size: 24rpx;
-          color: $textBlack-color;
-          margin-left: 20rpx;
-        }
-        .k {
-          width: 30rpx;
-          height: 30rpx;
-          align-items: center;
-          justify-content: center;
+    .info{
+      margin-top: 30rpx;
+      background: #fff;
+      padding: 40rpx;
+      h4{
+        font-weight: bold;
+        font-size: 32rpx;
+      }
+      ul{
+        li{
+          height: 80rpx;
           display: flex;
-          text-align: center;
-          border: 2rpx solid #0095D8;
-          color: #0095D8;
-          font-size: 20rpx;
-          margin-left: 10rpx;
-        }
-        .v {
-          font-size: 24rpx;
-          color: $textBlack-color;
-          margin-left: 10rpx;
+          justify-content: space-between;
+          align-items: center;
         }
       }
-      .discounts {
+    }
+    .pic{
+      margin-top: 30rpx;
+      background: #fff;
+      padding: 40rpx;
+      h4{
+        font-weight: bold;
+        font-size: 32rpx;
+      }
+      .shipPic{
+        margin-top: 30rpx;
         display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        padding: 0 16rpx;
-        padding-bottom: 20rpx;
-        .item {
-          display: flex;
-          align-items: center;
-          height: 60rpx;
-          margin-top: 10rpx;
-          img {
-            width: 30rpx;
-            height: 30rpx;
-          }
-          span {
-            font-size: 24rpx;
-            color: $textBlack-color;
-            margin-left: 20rpx;
-          }
+        justify-content: flex-start;
+        img{
+          margin-left: 10rpx;
+          width: 200rpx;
+          height: 200rpx;
         }
       }
     }

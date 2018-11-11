@@ -9,6 +9,7 @@
     "i-tab": "../../../static/iview/tab/index",
     "i-rate": "../../../static/iview/rate/index",
     "i-row": "../../../static/iview/row/index",
-    "i-col": "../../../static/iview/col/index"
+    "i-col": "../../../static/iview/col/index",
+    "i-tag": "../../../static/iview/tag/index"
   }
 }

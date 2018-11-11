@@ -75,6 +75,7 @@ export default {
 
 <style lang="scss">
 @import "assets/iconfont.less";
+@import "assets/iconfont1.less";
 
 page {
   box-sizing: border-box;

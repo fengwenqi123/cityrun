@@ -12,18 +12,6 @@
           <span>搜索商家</span>
         </div>
       </div>
-      <!--<swiper class="category-c" indicator-dots="true" indicator-color="#999" indicator-active-color="#FFC24A">-->
-        <!--<div v-for="(item, index) in categoryArr" :key="index">-->
-          <!--<swiper-item>-->
-            <!--<div class="grid-c">-->
-              <!--<div class="item" v-for="(itx, idx) in item.items" :key="idx" @click="categoryClick">-->
-                <!--<img class="item-img" :src="itx.url">-->
-                <!--<span class="item-title">{{itx.name}}</span>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</swiper-item>-->
-        <!--</div>-->
-      <!--</swiper>-->
       <swiper class="ad-c" indicator-dots="true" indicator-color="#999" indicator-active-color="#FFC24A" autoplay="true">
         <block v-for="(item, index) in topBannerData" :key="index">
           <swiper-item>
@@ -31,65 +19,239 @@
           </swiper-item>
         </block>
       </swiper>
+      <div class="bigList">
+        <div class="food">
+          <img src="http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg" alt="">
+        </div>
+        <div class="Supermarket">
+          <img src="http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg" alt="">
+        </div>
+      </div>
       <div class="section">
         <div class="l"></div>
         <span class="m">推荐商家</span>
         <div class="r"></div>
       </div>
       <div class="category-list">
+        <!--条件选择-->
         <div class="filter-bar">
-          <div class="item" v-for="(item, index) in filterList" :key="index" @click="btn(index)">
+          <div :class="{active1:active1===index}" class="item" v-for="(item, index) in filterList" :key="index" @click="btn(item,index)">
             <span>{{item.title}}</span>
             <i class="icon" :class="item.icon"></i>
           </div>
         </div>
-        <div class="item-list">
-          <div class="header">
-            <div class="item" v-for="(item, index) in tags" :key="index"  v-if="flag">
-              <span>{{item}}</span>
+        <div class="com" v-if="flag_com">
+          <ul>
+            <li @click="selected(item,index)" :class="{active:active===index}" v-for="(item,index) in com" :key="index">
+              <span>{{item.name}}</span>
+              <span v-if="active===index"><i class="icon" :class="item.icon"></i></span>
+            </li>
+          </ul>
+        </div>
+        <!--删选-->
+        <div class="header" v-if="flag">
+          <div class="item" v-for="(item, index) in tags" :key="index">
+            <span>{{item}}</span>
+          </div>
+        </div>
+        <div class="lists">
+          <div class="item-list">
+            <div class="left">
+              <img :src="src" alt="">
+            </div>
+            <div class="mid">
+              <p>重庆麻辣烫</p>
+              <div class="rate">
+                <i-rate :value="4.1"></i-rate>
+                <span>{{4.1}}分</span>
+                <span>月售{{441}}</span>
+              </div>
+              <div class="qisong">
+                <span>起送:￥{{10}}</span>
+                <span>配送:￥{{10}}</span>
+              </div>
+              <div class="new">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="green">
+                  新
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="red">
+                  减
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="yellow">
+                  折
+                </i-tag>
+              </div>
+            </div>
+            <div class="right">
+              <div class="km">
+                {{1.6}}KM
+              </div>
+              <div class="ps">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="blue">
+                  商家配送
+                </i-tag>
+              </div>
             </div>
           </div>
-          <div class="item" v-for="(item, index) in shopsList" :key="index" @click="shoppingCartClick">
-            <div class="item-l">
-              <img :src="item.pic_url">
-              <img class="tag" :src="item.poi_promotion_pic">
+          <div class="item-list">
+            <div class="left">
+              <img :src="src" alt="">
             </div>
-            <div class="item-r">
-              <div class="r-t">
-                <span class="shop-name">{{item.name}}</span>
-                <div class="t-c">
-                  <div class="c-l">
-                    <div class="l-l">
-                      <i class="icon mt-star-s" v-for="(itx, idx) in stars" :key="idx"></i>
-                    </div>
-                    <span class="l-m">{{item.wm_poi_score}}</span>
-                    <span class="l-r">{{item.month_sales_tip}}</span>
-                  </div>
-                  <div class="c-r">
-                    <span class="r-l">{{item.delivery_time_tip}}</span>
-                    <div class="r-m"></div>
-                    <span class="r-r">{{item.distance}}</span>
-                  </div>
-                </div>
+            <div class="mid">
+              <p>重庆麻辣烫</p>
+              <div class="rate">
+                <i-rate :value="4.1"></i-rate>
+                <span>{{4.1}}分</span>
+                <span>月售{{441}}</span>
               </div>
-              <div class="r-m">
-                <span class="m-l">{{item.min_price_tip}}</span>
-                <div class="m-m"></div>
-                <span class="m-r">{{item.shipping_fee_tip}}</span>
-                <div class="m-m"></div>
-                <span class="m-r">{{item.average_price_tip}}</span>
+              <div class="qisong">
+                <span>起送:￥{{10}}</span>
+                <span>配送:￥{{10}}</span>
               </div>
-              <div class="r-b">
-                <span class="b-l">支持自取</span>
-                <span class="b-r">极速配送</span>
+              <div class="new">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="green">
+                  新
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="red">
+                  减
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="yellow">
+                  折
+                </i-tag>
               </div>
-              <div class="activity-c">
-                <div class="ac-item" v-for="(itm, idx) in item.discounts2" :key="idx">
-                  <div class="ac">
-                    <img class="ac-l" :src="itm.icon_url">
-                    <span class="ac-r">{{itm.info}}</span>
-                  </div>
-                </div>
+            </div>
+            <div class="right">
+              <div class="km">
+                {{1.6}}KM
+              </div>
+              <div class="ps">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="blue">
+                  商家配送
+                </i-tag>
+              </div>
+            </div>
+          </div>
+          <div class="item-list">
+            <div class="left">
+              <img :src="src" alt="">
+            </div>
+            <div class="mid">
+              <p>重庆麻辣烫</p>
+              <div class="rate">
+                <i-rate :value="4.1"></i-rate>
+                <span>{{4.1}}分</span>
+                <span>月售{{441}}</span>
+              </div>
+              <div class="qisong">
+                <span>起送:￥{{10}}</span>
+                <span>配送:￥{{10}}</span>
+              </div>
+              <div class="new">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="green">
+                  新
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="red">
+                  减
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="yellow">
+                  折
+                </i-tag>
+              </div>
+            </div>
+            <div class="right">
+              <div class="km">
+                {{1.6}}KM
+              </div>
+              <div class="ps">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="blue">
+                  商家配送
+                </i-tag>
+              </div>
+            </div>
+          </div>
+          <div class="item-list">
+            <div class="left">
+              <img :src="src" alt="">
+            </div>
+            <div class="mid">
+              <p>重庆麻辣烫</p>
+              <div class="rate">
+                <i-rate :value="4.1"></i-rate>
+                <span>{{4.1}}分</span>
+                <span>月售{{441}}</span>
+              </div>
+              <div class="qisong">
+                <span>起送:￥{{10}}</span>
+                <span>配送:￥{{10}}</span>
+              </div>
+              <div class="new">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="green">
+                  新
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="red">
+                  减
+                </i-tag>
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="yellow">
+                  折
+                </i-tag>
+              </div>
+            </div>
+            <div class="right">
+              <div class="km">
+                {{1.6}}KM
+              </div>
+              <div class="ps">
+                <i-tag
+                  class="i-tags"
+                  name="标签一"
+                  color="blue">
+                  商家配送
+                </i-tag>
               </div>
             </div>
           </div>
@@ -110,38 +272,87 @@ export default {
       categoryArr: [{items: []}, {items: []}],
       topBannerData: [],
       bottomBanner: {},
+      active:0,
+      src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+      active1:null,
       shopsList: [],
       flag:false,
+      flag_com:false,
       address:null,
       filterList: [
         {
           title: '综合排序',
-          icon: 'mt-arrow-down-o'
+          icon: 'mt-arrow-down-o',
+          type:'1'
         },
         {
-          title: '销量最高'
+          title: '销量最高',
+          type:'2'
         },
         {
-          title: '速度最快'
+          title: '速度最快',
+          type:'3'
         },
         {
           title: '筛选',
-          icon: 'mt-filter-o'
+          icon: 'mt-filter-o',
+          type:'4'
         },
       ],
-      tags: ['满减优惠', '点评高分', '新商家', '美团专送'],
+      com:[
+        {
+          name:'综合排序',
+          id:1,
+          icon: 'mt-dagou-o'
+        },
+        {
+          name:'销量最高',
+          id:2,
+          icon: 'mt-dagou-o'
+        },
+        {
+          name:'起送价最低',
+          id:3,
+          icon: 'mt-dagou-o'
+        },
+        {
+          name:'配送费最低',
+          id:4,
+          icon: 'mt-dagou-o'
+        }
+      ],
+      tags: ['满减优惠', '新客立减', '单品折扣'],
       stars: [1, 2, 3, 4, 5]
     };
   },
+  onShow(){
+    this.flag=false
+    this.flag_com=false
+  },
   methods: {
-    btn(index){
-      if(index==3){
+    btn(item,index){
+      if(index===3){
+        this.flag_com=false
         if(!this.flag){
           this.flag=true
         }else{
           this.flag=false
         }
       }
+      if(index===0){
+        this.flag=false
+        if(!this.flag_com){
+          this.flag_com=true
+        }else{
+          this.flag_com=false
+        }
+      }
+      this.active1=index
+    },
+    selected(item,index){
+      this.active=index
+      this.flag_com=false
+      this.filterList[0].title=item.name
     },
     categoryClick() {
       wx.navigateTo({url: '/pages/categoryList/main'})
@@ -251,6 +462,29 @@ export default {
           color: $textDarkGray-color;
           font-size: 24rpx;
           margin-left: 10rpx;
+        }
+      }
+    }
+    .bigList{
+      padding: 10rpx;
+      display: flex;
+      justify-content: space-between;
+      .food{
+        width: 360rpx;
+        height: 200rpx;
+        background: #ccc;
+        img{
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .Supermarket{
+        width: 360rpx;
+        height: 200rpx;
+        background: #ccc;
+        img{
+          width: 100%;
+          height: 100%;
         }
       }
     }
@@ -379,6 +613,7 @@ export default {
       }
     }
     .category-list {
+      position: relative;
       display: flex;
       flex-direction: column;
       .filter-bar {
@@ -410,170 +645,104 @@ export default {
           }
         }
       }
-      .item-list {
-        display: flex;
-        flex-direction: column;
-        background-color: white;
-        .header {
-          display: flex;
-          align-items: center;
-          background-color: white;
-          justify-content: space-around;
-          .item {
+      .active1{
+        color: #000;
+        font-weight: bold;
+        font-size: 30rpx;
+      }
+      .com{
+        position: absolute;
+        top: 73rpx;
+        padding: 0 30rpx;
+        z-index: 99;
+        width: 690rpx;
+        background: #fff;
+        ul{
+          li{
             display: flex;
+            justify-content: space-between;
+            height: 50rpx;
             align-items: center;
-            justify-content: center;
-            background-color: #F8F8F8;
-            flex: 1;
-            margin-left: 20rpx;
-            padding: 10rpx 0;
-            span {
-              font-size: 20rpx;
-              color: $textDarkGray-color;
-            }
           }
-          .item:last-child {
-            margin-right: 20rpx;
-          }
-        }
-        .item {
-          display: flex;
-          background-color: white;
-          margin: 20rpx;
-          .item-l {
-            display: flex;
-            width: 160rpx;
-            height: 120rpx;
-            position: relative;
-            img {
-              width: 160rpx;
-              height: 120rpx;
-            }
-            .tag {
-              position: absolute;
-              width: 100rpx;
-              height: 60rpx;
-            }
-          }
-          .item-r {
-            margin-left: 20rpx;
-            flex-direction: column;
-            flex: 1;
-            .r-t {
-              display: flex;
-              flex-direction: column;
-              .shop-name {
-                font-size: 28rpx;
-                color: $textBlack-color;
-                font-weight: bold;
-              }
-              .t-c {
-                display: flex;
-                align-items: center;
-                margin-top: 10rpx;
-                .c-l {
-                  display: flex;
-                  flex: 1;
-                  .l-l {
-                    display: flex;
-                    i {
-                      font-size: 20rpx;
-                      color: $theme-color;
-                      margin-right: 10rpx;
-                    }
-                  }
-                  .l-m {
-                    font-size: 20rpx;
-                    color: $textBlack-color;
-                    margin-left: 10rpx;
-                  }
-                  .l-r {
-                    font-size: 20rpx;
-                    color: $textBlack-color;
-                    margin-left: 20rpx;
-                  }
-                }
-                .c-r {
-                  display: flex;
-                  align-items: center;
-                  .r-l {
-                    font-size: 20rpx;
-                    color: $textBlack-color;
-                  }
-                  .r-m {
-                    width: 2rpx;
-                    height: 20rpx;
-                    background-color: $textGray-color;
-                    margin: 0 10rpx;
-                  }
-                  .r-r {
-                    font-size: 20rpx;
-                    color: $textBlack-color;
-                  }
-                }
-              }
-            }
-            .r-m {
-              display: flex;
-              align-items: center;
-              margin-top: 10rpx;
-              .m-l {
-                font-size: 20rpx;
-                color: $textBlack-color;
-              }
-              .m-m {
-                width: 2rpx;
-                height: 20rpx;
-                margin: 0 10rpx;
-                background-color: $textGray-color;
-              }
-              .m-r {
-                font-size: 20rpx;
-                color: $textBlack-color;
-              }
-            }
-            .r-b {
-              display: flex;
-              align-items: center;
-              margin-top: 10rpx;
-              .b-l {
-                color: #09CFB5;
-                font-size: 20rpx;
-                border: 2rpx solid #09CFB5;
-                text-align: center;
-                padding: 0 8rpx;
-              }
-              .b-r {
-                @extend .b-l;
-                margin-left: 10rpx;
-              }
-            }
-            .activity-c {
-              display: flex;
-              flex-direction: column;
-              .ac-item {
-                display: flex;
-                align-items: center;
-                margin-top: 20rpx;
-                .ac {
-                  display: flex;
-                  align-items: center;
-                  .ac-l {
-                    width: 30rpx;
-                    height: 30rpx;
-                    background-size: cover;
-                  }
-                  .ac-r {
-                    color: $textDarkGray-color;
-                    font-size: 20rpx;
-                    margin-left: 10rpx;
-                  }
-                }
-              }
-            }
+          .active{
+            color: #1C86EE;
           }
         }
       }
+      .header {
+        position: absolute;
+        z-index: 99;
+        top: 73rpx;
+        width: 100%;
+        padding-top: 10rpx;
+        display: flex;
+        align-items: center;
+        background-color: white;
+        justify-content: space-around;
+        .item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #F8F8F8;
+          flex: 1;
+          margin-left: 20rpx;
+          padding: 10rpx 0;
+          span {
+            font-size: 20rpx;
+            color: $textDarkGray-color;
+          }
+        }
+        .item:last-child {
+          margin-right: 20rpx;
+        }
+      }
+    .lists{
+      background: #fff;
+      .item-list {
+        border-bottom: 1px solid #f5f5f5;
+        padding: 16rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .left{
+          width: 160rpx;
+          height: 160rpx;
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .mid{
+          p{
+            font-size: 32rpx;
+          }
+          .rate{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            span{
+              margin-top: 12rpx;
+            }
+          }
+          .qisong{
+            span{
+              margin-left: 10rpx;
+            }
+          }
+          .new{
+            .i-tags{
+              margin-left: 10rpx;
+            }
+          }
+        }
+        .right{
+          .km{
+            text-align: center;
+            margin-bottom: 14rpx;
+          }
+        }
+      }
+    }
     }
   }
 }
