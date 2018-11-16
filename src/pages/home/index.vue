@@ -50,40 +50,43 @@
         </div>
         <!--删选-->
         <div class="header" v-if="flag">
-          <div class="item" v-for="(item, index) in tags" :key="index">
-            <span>{{item}}</span>
+          <div @click="selected1(item,index)" class="item" v-for="(item, index) in tags" :key="index" :class="{active2:active2===index}">
+            <span>{{item.name}}</span>
           </div>
         </div>
         <div class="lists">
-          <div class="item-list">
+          <div @click="shoppingCartClick(item)" class="item-list" v-for="(item,index) in shopList" :key="index">
             <div class="left">
-              <img :src="src" alt="">
+              <img :src="item.shopLogo" alt="">
             </div>
             <div class="mid">
-              <p>重庆麻辣烫</p>
+              <p>{{item.shopTitle}}</p>
               <div class="rate">
-                <i-rate :value="4.1"></i-rate>
-                <span>{{4.1}}分</span>
-                <span>月售{{441}}</span>
+                <i-rate :value="item.avgStar"></i-rate>
+                <span>{{item.avgStar}}分</span>
+                <span>月售{{item.orderCount}}</span>
               </div>
               <div class="qisong">
-                <span>起送:￥{{10}}</span>
-                <span>配送:￥{{10}}</span>
+                <span>起送:￥{{item.shopSendMinprice}}</span>
+                <span>配送:￥{{item.shopSendPrice/100}}</span>
               </div>
-              <div class="new">
+              <div class="new" v-if="item.atList.length>0" v-for="(item_1,index_1) in item.atList" :key="index_1">
                 <i-tag
+                  v-if="item_1.activityType===1"
                   class="i-tags"
                   name="标签一"
                   color="green">
                   新
                 </i-tag>
                 <i-tag
+                  v-if="item_1.activityType===2"
                   class="i-tags"
                   name="标签一"
                   color="red">
                   减
                 </i-tag>
                 <i-tag
+                  v-if="item_1.activityType===3"
                   class="i-tags"
                   name="标签一"
                   color="yellow">
@@ -93,157 +96,7 @@
             </div>
             <div class="right">
               <div class="km">
-                {{1.6}}KM
-              </div>
-              <div class="ps">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="blue">
-                  商家配送
-                </i-tag>
-              </div>
-            </div>
-          </div>
-          <div class="item-list">
-            <div class="left">
-              <img :src="src" alt="">
-            </div>
-            <div class="mid">
-              <p>重庆麻辣烫</p>
-              <div class="rate">
-                <i-rate :value="4.1"></i-rate>
-                <span>{{4.1}}分</span>
-                <span>月售{{441}}</span>
-              </div>
-              <div class="qisong">
-                <span>起送:￥{{10}}</span>
-                <span>配送:￥{{10}}</span>
-              </div>
-              <div class="new">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="green">
-                  新
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="red">
-                  减
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="yellow">
-                  折
-                </i-tag>
-              </div>
-            </div>
-            <div class="right">
-              <div class="km">
-                {{1.6}}KM
-              </div>
-              <div class="ps">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="blue">
-                  商家配送
-                </i-tag>
-              </div>
-            </div>
-          </div>
-          <div class="item-list">
-            <div class="left">
-              <img :src="src" alt="">
-            </div>
-            <div class="mid">
-              <p>重庆麻辣烫</p>
-              <div class="rate">
-                <i-rate :value="4.1"></i-rate>
-                <span>{{4.1}}分</span>
-                <span>月售{{441}}</span>
-              </div>
-              <div class="qisong">
-                <span>起送:￥{{10}}</span>
-                <span>配送:￥{{10}}</span>
-              </div>
-              <div class="new">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="green">
-                  新
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="red">
-                  减
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="yellow">
-                  折
-                </i-tag>
-              </div>
-            </div>
-            <div class="right">
-              <div class="km">
-                {{1.6}}KM
-              </div>
-              <div class="ps">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="blue">
-                  商家配送
-                </i-tag>
-              </div>
-            </div>
-          </div>
-          <div class="item-list">
-            <div class="left">
-              <img :src="src" alt="">
-            </div>
-            <div class="mid">
-              <p>重庆麻辣烫</p>
-              <div class="rate">
-                <i-rate :value="4.1"></i-rate>
-                <span>{{4.1}}分</span>
-                <span>月售{{441}}</span>
-              </div>
-              <div class="qisong">
-                <span>起送:￥{{10}}</span>
-                <span>配送:￥{{10}}</span>
-              </div>
-              <div class="new">
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="green">
-                  新
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="red">
-                  减
-                </i-tag>
-                <i-tag
-                  class="i-tags"
-                  name="标签一"
-                  color="yellow">
-                  折
-                </i-tag>
-              </div>
-            </div>
-            <div class="right">
-              <div class="km">
-                {{1.6}}KM
+                {{item.distance}}KM
               </div>
               <div class="ps">
                 <i-tag
@@ -265,6 +118,7 @@
 import {queryHomeHeadCategory} from '@/action/action'
 import {homeData} from './data'
 import {mapMutations, mapGetters } from "vuex"
+import {ShopLists} from '@/api/home.js'
 
 export default {
   data() {
@@ -275,6 +129,7 @@ export default {
       active:0,
       src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
       active1:null,
+      active2:null,
       shopsList: [],
       flag:false,
       flag_com:false,
@@ -283,20 +138,19 @@ export default {
         {
           title: '综合排序',
           icon: 'mt-arrow-down-o',
-          type:'1'
+          id:1
         },
         {
-          title: '销量最高',
-          type:'2'
+          title: '距离最近',
+          id:2
         },
         {
-          title: '速度最快',
-          type:'3'
+          title: '好评优先',
+          id:3
         },
         {
           title: '筛选',
-          icon: 'mt-filter-o',
-          type:'4'
+          icon: 'mt-filter-o'
         },
       ],
       com:[
@@ -307,22 +161,35 @@ export default {
         },
         {
           name:'销量最高',
-          id:2,
+          id:12,
           icon: 'mt-dagou-o'
         },
         {
           name:'起送价最低',
-          id:3,
+          id:13,
           icon: 'mt-dagou-o'
         },
         {
           name:'配送费最低',
-          id:4,
+          id:14,
           icon: 'mt-dagou-o'
         }
       ],
-      tags: ['满减优惠', '新客立减', '单品折扣'],
-      stars: [1, 2, 3, 4, 5]
+      tags: [{
+        name:'满减优惠',
+        id:4
+      },
+        {
+          name:'新客立减',
+          id:5
+        },
+        {
+          name:'单品折扣',
+          id:6
+        }],
+      stars: [1, 2, 3, 4, 5],
+      obj:{},
+      shopList:null
     };
   },
   onShow(){
@@ -331,14 +198,6 @@ export default {
   },
   methods: {
     btn(item,index){
-      if(index===3){
-        this.flag_com=false
-        if(!this.flag){
-          this.flag=true
-        }else{
-          this.flag=false
-        }
-      }
       if(index===0){
         this.flag=false
         if(!this.flag_com){
@@ -346,13 +205,34 @@ export default {
         }else{
           this.flag_com=false
         }
+      }else if(index===3){
+        this.flag_com=false
+        if(!this.flag){
+          this.flag=true
+        }else{
+          this.flag=false
+        }
+      }else{
+        this.obj.queryType=item.id
+        this.getShipList(this.obj)
+        this.flag=false
+        this.flag_com=false
       }
+
       this.active1=index
     },
     selected(item,index){
       this.active=index
       this.flag_com=false
+      this.obj.queryType=item.id
+      this.getShipList(this.obj)
       this.filterList[0].title=item.name
+    },
+    selected1(item,index){
+      this.active2=index
+      this.flag=false
+      this.obj.queryType=item.id
+      this.getShipList(this.obj)
     },
     categoryClick() {
       wx.navigateTo({url: '/pages/categoryList/main'})
@@ -363,8 +243,8 @@ export default {
     searchClick() {
       wx.navigateTo({url: '/pages/searchList/main'})
     },
-    shoppingCartClick() {
-      wx.navigateTo({url: '/pages/shoppingCart1/main'})
+    shoppingCartClick(item) {
+      wx.navigateTo({url: '/pages/shoppingCart1/main?id='+item.id})
     },
     wxGetLocation(){
       let _this = this;
@@ -380,13 +260,15 @@ export default {
             },
             url:'https://apis.map.qq.com/ws/geocoder/v1/?location='+latitude+','+longitude+'&key=MVGBZ-R2U3U-W5CVY-2PQID-AT4VZ-PDF35',
             success: function(res) {
-              // _this.country = res.data.result.address_component.nation
-              // _this.province =res.data.result.address_component.province
-              // _this.city = res.data.result.address_component.city
-              // _this.district = res.data.result.address_component.district
-              //_this.count();
               _this.address=res.data.result.address_component.street_number
               console.log(res.data)
+                _this.obj.latitude = res.data.result.location.lat,
+                _this.obj.longitude=res.data.result.location.lng,
+                _this.obj.isRecommend=null,
+                _this.obj.queryType=1,
+                _this.obj.pageNum=1,
+                _this.obj.pageSize=10
+              _this.getShipList(_this.obj)
               var obj={}
               obj.address= _this.address
               obj.city=res.data.result.address_component.city
@@ -399,6 +281,15 @@ export default {
           console.log(112)
         }
       });
+    },
+    // 请求商家列表
+    getShipList(obj){
+      ShopLists(obj).then(response=>{
+        this.shopList=response.data.returnObject.list
+        this.shopList.forEach((item,index)=>{
+          item.distance=(item.distance/1000).toFixed(2)
+        })
+      })
     }
   },
   mounted() {
@@ -690,6 +581,12 @@ export default {
           span {
             font-size: 20rpx;
             color: $textDarkGray-color;
+          }
+        }
+        .active2{
+          background: #1C86EE;
+          span{
+            color: #fff;
           }
         }
         .item:last-child {

@@ -184,6 +184,7 @@ import {jointStyle} from "@/utils/style";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {formatYMD} from '@/utils/formatTime'
 import {_array} from '@/utils/arrayExtension'
+import {Lists} from '@/api/shoppingCart.js'
 
 export default {
   data() {
@@ -238,7 +239,8 @@ export default {
         'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
         'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
         'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
-      ]
+      ],
+      obj:{},
     }
   },
   computed: {
@@ -301,7 +303,7 @@ export default {
       }
     }
   },
-  onShow(){
+  onShow(options){
     this.flag=false
   },
   methods: {
@@ -396,10 +398,23 @@ export default {
       this.changeItemModalMut(false)
       var item = this.previewInfo
       this.selectSkuAction({item, index: item.preIndex})
+    },
+    getQuery(){
+       let id=this.$root.$mp.query.id
+      this.obj.shopId=id
+      this.obj.goodsTypeId=null
+      this.obj.pageNum=1
+      this.obj.pageSize=5000
+      this.getList(this.obj)
+    },
+    getList(obj){
+      Lists(obj).then(response=>{
+      })
     }
   },
   mounted() {
     this.getMenuDataAction()
+    this.getQuery()
   }
 }
 </script>

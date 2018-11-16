@@ -9,7 +9,6 @@ import '@/assets/index.scss'
 Vue.config.productionTip = false
 App.mpType = 'app'
 Vue.prototype.util = util
-// Vue.prototype.$store = store
 
 const app = new Vue({
   store,
