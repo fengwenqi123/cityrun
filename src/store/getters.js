@@ -6,5 +6,7 @@ const getters = {
   avgStar: state => state.home.avgStar,
   orderCount: state => state.home.orderCount,
   shopTitle: state => state.home.shopTitle,
+  latitude: state => state.home.latitude,
+  longitude: state => state.home.longitude,
 }
 export default getters

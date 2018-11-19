@@ -265,6 +265,8 @@ export default {
               console.log(res.data)
                 _this.obj.latitude = res.data.result.location.lat,
                 _this.obj.longitude=res.data.result.location.lng,
+                // _this.obj.latitude ='30.266561'
+                // _this.obj.longitude='119.958444'
                 _this.obj.isRecommend=null,
                 _this.obj.queryType=1,
                 _this.obj.pageNum=1,
@@ -285,10 +287,12 @@ export default {
     // 请求商家列表
     getShipList(obj){
       ShopLists(obj).then(response=>{
-        this.shopList=response.data.returnObject.list
-        this.shopList.forEach((item,index)=>{
-          item.distance=(item.distance/1000).toFixed(2)
-        })
+        if(response.data.returnObject){
+          this.shopList=response.data.returnObject.list
+          this.shopList.forEach((item,index)=>{
+            item.distance=(item.distance/1000).toFixed(2)
+          })
+        }
       })
     }
   },

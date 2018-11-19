@@ -46,8 +46,10 @@
                     <!--<i class="icon mt-reduce-o"></i>-->
                     <!--<span>{{item.sequence}}</span>-->
                   <!--</div>-->
-                  <div class="add-r" @click.stop="addClick(item, index)">
-                    <i class="icon mt-add-o"></i>
+                  <div class="add-r">
+                    <i class="icon mt-add-o" @click.stop="addClick(item, index)"></i>
+                    <span>{{item.num}}</span>
+                    <i class="icon mt-add-o" @click.stop="addClick(item, index)"></i>
                   </div>
                 <!--</div>-->
               </div>
@@ -177,7 +179,7 @@ import {jointStyle} from "@/utils/style";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {formatYMD} from '@/utils/formatTime'
 import {_array} from '@/utils/arrayExtension'
-import {Lists,commentList,GoodsTypeList} from '@/api/shoppingCart.js'
+import {Lists,commentList,GoodsTypeList,getShop} from '@/api/shoppingCart.js'
 
 export default {
   data() {
@@ -371,9 +373,15 @@ export default {
     // skuClick(item, index) {
     //   this.selectSkuAction({item, index})
     // },
-    // addClick(item, index) {
-    //   this.addItemAction({item, index})
-    // },
+    addClick(item, index) {
+      this.shopList.forEach((item,indexs)=>{
+        if(index===indexs){
+          item.num+=1
+          console.log(item.num)
+        }
+      })
+      console.log(this.shopList)
+    },
     // reduceClick(item, index) {
     //   this.reduceItemAction({item, index})
     // },
@@ -422,21 +430,29 @@ export default {
       this.obj.pageSize=5000
       this.getGoodsTypeList(id)
       this.getCommentList(id)
+      this.getShops(id)
     },
     // 商品列表
     getList(obj){
       Lists(obj).then(response=>{
-        this.shopList=response.data.returnObject
-        console.log(this.shopList)
+        if(response.data.returnObject){
+          this.shopList=response.data.returnObject
+          this.shopList.forEach((item,index)=>{
+            item.num=0
+            item.priceOut=(item.priceOut/100).toFixed(2)
+          })
+        }
       })
     },
     // 菜品分类列表
     getGoodsTypeList(shopId){
-      GoodsTypeList({shopId}).then(response=>{
-        this.TypeList=response.data.returnObject.list
-        if(this.TypeList.length>0){
-          this.obj.goodsTypeId=this.TypeList[0].id
-          this.getList(this.obj)
+      GoodsTypeList(shopId).then(response=>{
+        if(response.data.returnObject){
+          this.TypeList=response.data.returnObject.list
+          if(this.TypeList.length>0){
+            this.obj.goodsTypeId=this.TypeList[0].id
+            this.getList(this.obj)
+          }
         }
       })
     },
@@ -447,6 +463,13 @@ export default {
       this.Comment.pageSize=10
       commentList(this.Comment).then(response=>{
 
+      })
+    },
+    // 获取店铺详情
+    getShops(id){
+      var longitude= this.$store.state.home.longitude
+      var latitude= this.$store.state.home.latitude
+      getShop(id,latitude,longitude).then(response=>{
       })
     }
   },
@@ -600,6 +623,10 @@ export default {
             margin-left: 20rpx;
             justify-content: space-between;
             flex: 1;
+            .icon{
+              font-size: 40rpx;
+              color: #2d8cf0;
+            }
             .title {
               font-size: 28rpx;
               color: $textBlack-color;
@@ -807,7 +834,7 @@ export default {
     flex-direction: column;
     position: fixed;
     bottom: 0;
-    height: 200rpx;
+    height: 182rpx;
     background-color: #333;
     z-index: 990;
     width: 100%;
