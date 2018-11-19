@@ -5,13 +5,13 @@
       <div class="backimg">
       </div>
       <div class="shopImg">
-        13123123
+        <img :src="shopLogo" alt="">
       </div>
       <div class="title">
-        <p>重庆麻辣烫</p>
-        <p><span>评价</span><span>月售</span></p>
+        <p>{{shopTitle}}</p>
+        <p><span>评分:{{avgStar}}</span><span>月售:{{orderCount}}</span></p>
         <p>满20减5，满35减10，满40减15</p>
-        <p>公告：中国餐饮OTO连锁品牌-重庆麻辣烫。配…</p>
+        <p>公告：{{shopNotice}}</p>
       </div>
         <i-tabs :current="current" @change="handleChange">
           <i-tab key="tab1" title="菜单"></i-tab>
@@ -20,45 +20,40 @@
         </i-tabs>
     </div>
     <div class="list-c" v-if="pageIndex === 0">
-      <scroll-view class="list-l" :scroll-y="true">
-        <div class="l-item" :class="{active: index === tagIndex}" v-for="(item, index) in foods" :key="index" @click="categoryClick(item, index)">
-          <img :src="item.icon" v-if="item.icon.length > 0">
-          <span>{{item.name}}</span>
-          <text class="count" v-if="item.count > 0">{{item.count}}</text>
+      <scroll-view class="list-l" :scroll-y="true" :scrolltop="scrollTop">
+        <div class="l-item" :class="{active: index === tagIndex}" v-for="(item, index) in TypeList" :key="index" @click="categoryClick(item, index)">
+          <span>{{item.title}}</span>
         </div>
       </scroll-view>
       <scroll-view class="list-r" :scroll-y="true">
-        <div class="section">
-          <span class="title">{{spus.title}}</span>
-        </div>
-        <div class="item-list" v-for="(item, index) in spus.list" :key="index">
+        <div class="item-list" v-for="(item, index) in shopList" :key="index">
           <div class="item" @click="itemClick(item, index)">
             <div class="item-l">
-              <img :src="item.picture">
+              <img :src="item.goodsPic">
             </div>
             <div class="item-r">
-              <span class="title">{{item.name}}</span>
-              <span class="sub-title">{{item.description}}</span>
-              <span class="sale-num">{{item.month_saled_content}} {{item.praise_content}}</span>
+              <span class="title">{{item.goodsTitle}}</span>
+              <span class="sub-title">{{item.goodsTitleSimple}}</span>
+              <span class="sale-num">月售：{{item.biz30Day}}</span>
               <div class="r-t">
-                <span class="price">￥{{item.min_price}}</span>
-                <div class="sku" v-if="item.attrs.length" @click.stop="skuClick(item, index)">
-                  <span>选规格</span>
-                  <span class="count" v-if="item.sequence > 0">{{item.sequence}}</span>
-                </div>
-                <div class="add-item" v-else>
-                  <div class="add-l" @click.stop="reduceClick(item, index)" v-if="item.sequence > 0">
-                    <i class="icon mt-reduce-o"></i>
-                    <span>{{item.sequence}}</span>
-                  </div>
+                <span class="price">￥{{item.priceOut}}</span>
+                <!--<div class="sku" v-if="item.attrs.length" @click.stop="skuClick(item, index)">-->
+                  <!--<span>选规格</span>-->
+                  <!--<span class="count" v-if="item.sequence > 0">{{item.sequence}}</span>-->
+                <!--</div>-->
+                <!--<div class="add-item" v-else>-->
+                  <!--<div class="add-l" @click.stop="reduceClick(item, index)" v-if="item.sequence > 0">-->
+                    <!--<i class="icon mt-reduce-o"></i>-->
+                    <!--<span>{{item.sequence}}</span>-->
+                  <!--</div>-->
                   <div class="add-r" @click.stop="addClick(item, index)">
                     <i class="icon mt-add-o"></i>
                   </div>
-                </div>
+                <!--</div>-->
               </div>
-              <div class="tags-c">
-                <img class="tags" :src="itm.picture_url" v-for="(itm, idx) in item.product_label_picture_list" :key="idx">
-              </div>
+              <!--<div class="tags-c">-->
+                <!--<img class="tags" :src="itm.picture_url" v-for="(itm, idx) in item.product_label_picture_list" :key="idx">-->
+              <!--</div>-->
             </div>
           </div>
         </div>
@@ -147,10 +142,8 @@
       <i-tab key="tab3" title="商家"></i-tab>
     </i-tabs>
       <scroll-view class="list-l list-l-flxed" v-if="flag&&pageIndex === 0" :scroll-y="true">
-        <div class="l-item" :class="{active: index === tagIndex}" v-for="(item, index) in foods" :key="index" @click="categoryClick(item, index)">
-          <img :src="item.icon" v-if="item.icon.length > 0">
-          <span>{{item.name}}</span>
-          <text class="count" v-if="item.count > 0">{{item.count}}</text>
+        <div class="l-item" :class="{active: index === tagIndex}" v-for="(item, index) in TypeList" :key="index" @click="categoryClick(item, index)">
+          <span>{{item.title}}</span>
         </div>
       </scroll-view>
     <div class="footer-c" v-if="pageIndex === 0">
@@ -161,7 +154,7 @@
         <div class="l">
           <span class="price" v-if="totalPrice > 0 || productCount > 0">￥<span>{{totalPrice}}</span></span>
           <div class="m-l">
-            <span class="l-l">另需配送费￥{{shopInfo.support_pay}}</span>
+            <!--<span class="l-l">另需配送费￥{{shopInfo.support_pay}}</span>-->
             <div class="l-m"></div>
             <span class="l-r">支持自取</span>
           </div>
@@ -184,11 +177,12 @@ import {jointStyle} from "@/utils/style";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {formatYMD} from '@/utils/formatTime'
 import {_array} from '@/utils/arrayExtension'
-import {Lists} from '@/api/shoppingCart.js'
+import {Lists,commentList,GoodsTypeList} from '@/api/shoppingCart.js'
 
 export default {
   data() {
     return {
+      scrollTop:400,
       tagIndex: 0,
       pageIndex: 0,
       current:'tab1',
@@ -241,80 +235,98 @@ export default {
         'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
       ],
       obj:{},
+      Comment:{},
+      shopList:null,
+      TypeList:null
     }
   },
   computed: {
-    ...mapState("shoppingCart", ["shopInfo", "foods", "spus", "commentInfo", "visibleSkuModal", "visibleItemModal", "skuInfo", "previewInfo"]),
-    lineStyle() {
-      let left = this.left
-      let style = {left};
-      return jointStyle(style);
+    // ...mapState("shoppingCart", ["shopInfo", "foods", "spus", "commentInfo", "visibleSkuModal", "visibleItemModal", "skuInfo", "previewInfo"]),
+    // lineStyle() {
+    //   let left = this.left
+    //   let style = {left};
+    //   return jointStyle(style);
+    // },
+    // totalPrice() {
+    //   var price = 0
+    //   this.foods.map(item => price += item.totalPrice)
+    //   return parseFloat(price).toFixed(1);
+    // },
+    // productCount() {
+    //   var count = 0
+    //   this.foods.map(item => count += item.count)
+    //   return count
+    // },
+    // reduceTip() {
+    //   var content = this.shopInfo.prompt_text
+    //   var price = 0
+    //   this.foods.map(item => price += item.totalPrice)
+    //   if (price <= 0) return content
+    //   if (price < this.shopInfo.min_price) {
+    //     var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
+    //     return `还差 ${value}元 就能起送`
+    //   }
+    //   var activity_info = this.shopInfo.activity_info
+    //   for (let i = 0; i < activity_info.length; i++) {
+    //     const item = activity_info[i];
+    //     if (price < item.priceLower) {
+    //       var str = parseFloat(item.priceLower - price).toFixed(1)
+    //       if (i === 0) {
+    //         this.changeReduceFeeDataMut(0.0)
+    //         return `再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
+    //       } else {
+    //         var perItem = activity_info[i - 1];
+    //         this.changeReduceFeeDataMut(perItem.reduce)
+    //         return `已减${perItem.reduce}元 再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
+    //       }
+    //     } else {
+    //       continue
+    //     }
+    //   }
+    //   var lastItem = activity_info[activity_info.length - 1]
+    //   this.changeReduceFeeDataMut(lastItem.priceLower)
+    //   return `已满 ${lastItem.priceLower} 可减 ${lastItem.reduce}`
+    // },
+    // btnTitle() {
+    //   var content = `${this.shopInfo.min_price}元起送`
+    //   var price = 0
+    //   this.foods.map(item => price += item.totalPrice)
+    //   if (price <= 0) return content
+    //   if (price < this.shopInfo.min_price) {
+    //     var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
+    //     return `还差${value}元`
+    //   } else {
+    //     return '去结算'
+    //   }
+    // },
+    shopLogo(){
+        return this.$store.state.home.shopLogo
+      },
+    shopNotice(){
+      return this.$store.state.home.shopNotice
     },
-    totalPrice() {
-      var price = 0
-      this.foods.map(item => price += item.totalPrice)
-      return parseFloat(price).toFixed(1);
+    avgStar(){
+      return this.$store.state.home.avgStar
     },
-    productCount() {
-      var count = 0
-      this.foods.map(item => count += item.count)
-      return count
+    orderCount(){
+      return this.$store.state.home.orderCount
     },
-    reduceTip() {
-      var content = this.shopInfo.prompt_text
-      var price = 0
-      this.foods.map(item => price += item.totalPrice)
-      if (price <= 0) return content
-      if (price < this.shopInfo.min_price) {
-        var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
-        return `还差 ${value}元 就能起送`
-      }
-      var activity_info = this.shopInfo.activity_info
-      for (let i = 0; i < activity_info.length; i++) {
-        const item = activity_info[i];
-        if (price < item.priceLower) {
-          var str = parseFloat(item.priceLower - price).toFixed(1)
-          if (i === 0) {
-            this.changeReduceFeeDataMut(0.0)
-            return `再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
-          } else {
-            var perItem = activity_info[i - 1];
-            this.changeReduceFeeDataMut(perItem.reduce)
-            return `已减${perItem.reduce}元 再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
-          }
-        } else {
-          continue
-        }
-      }
-      var lastItem = activity_info[activity_info.length - 1]
-      this.changeReduceFeeDataMut(lastItem.priceLower)
-      return `已满 ${lastItem.priceLower} 可减 ${lastItem.reduce}`
+    shopTitle(){
+      return this.$store.state.home.shopTitle
     },
-    btnTitle() {
-      var content = `${this.shopInfo.min_price}元起送`
-      var price = 0
-      this.foods.map(item => price += item.totalPrice)
-      if (price <= 0) return content
-      if (price < this.shopInfo.min_price) {
-        var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
-        return `还差${value}元`
-      } else {
-        return '去结算'
-      }
-    }
   },
   onShow(options){
     this.flag=false
   },
   methods: {
-    ...mapMutations("shoppingCart", ["changeReduceFeeDataMut", "changeSkuModalMut", "changeItemModalMut"]),
-    ...mapActions("shoppingCart", ["getMenuDataAction", "getCommentDataAction", "getCategoryMenuDataAction", "addItemAction", "reduceItemAction", "closeShoppingCartAction", "selectSkuAction", "changeSkuDataMut", "attrSelectAction", "changeSkuModalDataAction", "previewItemAction"]),
-    orderClick() {
-      var price = 0
-      this.foods.map(item => price += item.totalPrice)
-      if (price < this.shopInfo.min_price) return;
-      this.closeShoppingCartAction()
-    },
+    // ...mapMutations("shoppingCart", ["changeReduceFeeDataMut", "changeSkuModalMut", "changeItemModalMut"]),
+    // ...mapActions("shoppingCart", ["getMenuDataAction", "getCommentDataAction", "getCategoryMenuDataAction", "addItemAction", "reduceItemAction", "closeShoppingCartAction", "selectSkuAction", "changeSkuDataMut", "attrSelectAction", "changeSkuModalDataAction", "previewItemAction"]),
+    // orderClick() {
+    //   var price = 0
+    //   this.foods.map(item => price += item.totalPrice)
+    //   if (price < this.shopInfo.min_price) return;
+    //   this.closeShoppingCartAction()
+    // },
     scroll(e){
       console.log(e.mp.detail.scrollTop)
       if(e.mp.detail.scrollTop>=225){
@@ -329,7 +341,7 @@ export default {
       }
       if(detail.mp.detail.key==='tab2'){
         this.pageIndex = 1
-        this.getCommentDataAction()
+        // this.getCommentDataAction()
       }
       if(detail.mp.detail.key==='tab3'){
         this.pageIndex = 2
@@ -338,82 +350,108 @@ export default {
     },
     categoryClick(item, index) {
       this.tagIndex = index;
-      this.getCategoryMenuDataAction({index})
+      var id=item.id
+      this.obj.goodsTypeId=id
+      this.getList(this.obj)
+      // this.getCategoryMenuDataAction({index})
     },
-    menuClick() {
-      this.left = 40 + 'rpx'
-      this.pageIndex = 0
-    },
-    commentClick() {
-      this.left = 182 + 'rpx'
-      this.pageIndex = 1
-      this.getCommentDataAction()
-    },
-    shopClick() {
-      this.left = 325 + 'rpx'
-      this.pageIndex = 2
-    },
-    skuClick(item, index) {
-      this.selectSkuAction({item, index})
-    },
-    addClick(item, index) {
-      this.addItemAction({item, index})
-    },
-    reduceClick(item, index) {
-      this.reduceItemAction({item, index})
-    },
-    closeSku() {
-      this.changeSkuModalMut(false)
-    },
-    attrClick(itm, idx, setIdx) {
-      this.attrSelectAction({itm, idx, setIdx})
-    },
-    modalAdd() {
-      var skuInfo = this.skuInfo
-      const {item, index} = skuInfo
-      this.addItemAction({item, index})
-      this.changeSkuModalDataAction({num: 1})
-    },
-    modalReduce() {
-      var skuInfo = this.skuInfo
-      const {item, index} = skuInfo
-      this.reduceItemAction({item, index})
-      this.changeSkuModalDataAction({num: -1})
-    },
-    closePreview() {
-      this.changeItemModalMut(false)
-    },
-    itemClick(item ,index) {
-      this.previewItemAction({item, index})
-    },
-    previewAdd() {
-      var item = this.previewInfo
-      this.addItemAction({item, index:item.preIndex})
-    },
-    previewReduce() {
-      var item = this.previewInfo
-      this.reduceItemAction({item, index:item.preIndex})
-    },
-    previewAttr() {
-      this.changeItemModalMut(false)
-      var item = this.previewInfo
-      this.selectSkuAction({item, index: item.preIndex})
-    },
+    // menuClick() {
+    //   this.left = 40 + 'rpx'
+    //   this.pageIndex = 0
+    // },
+    // commentClick() {
+    //   this.left = 182 + 'rpx'
+    //   this.pageIndex = 1
+    //   this.getCommentDataAction()
+    // },
+    // shopClick() {
+    //   this.left = 325 + 'rpx'
+    //   this.pageIndex = 2
+    // },
+    // skuClick(item, index) {
+    //   this.selectSkuAction({item, index})
+    // },
+    // addClick(item, index) {
+    //   this.addItemAction({item, index})
+    // },
+    // reduceClick(item, index) {
+    //   this.reduceItemAction({item, index})
+    // },
+    // closeSku() {
+    //   this.changeSkuModalMut(false)
+    // },
+    // attrClick(itm, idx, setIdx) {
+    //   this.attrSelectAction({itm, idx, setIdx})
+    // },
+    // modalAdd() {
+    //   var skuInfo = this.skuInfo
+    //   const {item, index} = skuInfo
+    //   this.addItemAction({item, index})
+    //   this.changeSkuModalDataAction({num: 1})
+    // },
+    // modalReduce() {
+    //   var skuInfo = this.skuInfo
+    //   const {item, index} = skuInfo
+    //   this.reduceItemAction({item, index})
+    //   this.changeSkuModalDataAction({num: -1})
+    // },
+    // closePreview() {
+    //   this.changeItemModalMut(false)
+    // },
+    // itemClick(item ,index) {
+    //   this.previewItemAction({item, index})
+    // },
+    // previewAdd() {
+    //   var item = this.previewInfo
+    //   this.addItemAction({item, index:item.preIndex})
+    // },
+    // previewReduce() {
+    //   var item = this.previewInfo
+    //   this.reduceItemAction({item, index:item.preIndex})
+    // },
+    // previewAttr() {
+    //   this.changeItemModalMut(false)
+    //   var item = this.previewInfo
+    //   this.selectSkuAction({item, index: item.preIndex})
+    // },
     getQuery(){
-       let id=this.$root.$mp.query.id
+      let id=this.$root.$mp.query.id
       this.obj.shopId=id
       this.obj.goodsTypeId=null
       this.obj.pageNum=1
       this.obj.pageSize=5000
-      this.getList(this.obj)
+      this.getGoodsTypeList(id)
+      this.getCommentList(id)
     },
+    // 商品列表
     getList(obj){
       Lists(obj).then(response=>{
+        this.shopList=response.data.returnObject
+        console.log(this.shopList)
+      })
+    },
+    // 菜品分类列表
+    getGoodsTypeList(shopId){
+      GoodsTypeList({shopId}).then(response=>{
+        this.TypeList=response.data.returnObject.list
+        if(this.TypeList.length>0){
+          this.obj.goodsTypeId=this.TypeList[0].id
+          this.getList(this.obj)
+        }
+      })
+    },
+    // 评价
+    getCommentList(id){
+      this.Comment.shopId=id
+      this.Comment.pageNum=1
+      this.Comment.pageSize=10
+      commentList(this.Comment).then(response=>{
+
       })
     }
   },
   mounted() {
-    this.getMenuDataAction()
+    // this.getMenuDataAction()
     this.getQuery()
   }
 }
@@ -497,9 +535,12 @@ export default {
       width:160rpx;
       height:160rpx;
       position:absolute;
-      background:red;
       margin-left:294rpx;
       top:76rpx;
+      img{
+        width: 160rpx;
+        height: 160rpx;
+      }
     }
     .title{
       padding-top: 50rpx;

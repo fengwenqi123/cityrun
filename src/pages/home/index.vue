@@ -244,6 +244,7 @@ export default {
       wx.navigateTo({url: '/pages/searchList/main'})
     },
     shoppingCartClick(item) {
+      this.$store.commit('submitShopInfo',item)
       wx.navigateTo({url: '/pages/shoppingCart1/main?id='+item.id})
     },
     wxGetLocation(){
@@ -278,7 +279,6 @@ export default {
         },
         fail: function(err) {
           console.log(err);
-          console.log(112)
         }
       });
     },
@@ -627,8 +627,10 @@ export default {
             }
           }
           .new{
+            display: inline-block;
             .i-tags{
-              margin-left: 10rpx;
+              margin-left: 6rpx;
+              display: inline-block;
             }
           }
         }
