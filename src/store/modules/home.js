@@ -15,6 +15,8 @@ const home = {
     submitAddress(state, obj) {
       state.address = obj.address
       state.city = obj.city
+      state.latitude = obj.latitude
+      state.longitude = obj.longitude
     },
     submitShopInfo(state, obj) {
       state.shopLogo = obj.shopLogo
@@ -22,8 +24,6 @@ const home = {
       state.avgStar = obj.avgStar
       state.orderCount = obj.orderCount
       state.shopTitle = obj.shopTitle
-      state.latitude = obj.latitude
-      state.longitude = obj.longitude
     },
     abc(state) {
       console.log(state.address)

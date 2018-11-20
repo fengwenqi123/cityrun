@@ -275,7 +275,7 @@ export default {
               var obj={}
               obj.address= _this.address
               obj.city=res.data.result.address_component.city
-              _this.$store.commit('submitAddress',obj)
+              _this.$store.commit('submitAddress',_this.obj)
             }
           });
         },

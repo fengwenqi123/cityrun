@@ -26,7 +26,7 @@
         </div>
       </scroll-view>
       <scroll-view class="list-r" :scroll-y="true">
-        <div class="item-list" v-for="(item, index) in shopList" :key="index">
+        <div class="item-list" v-if="shopList&&item.goodsTypeId===cpId" v-for="(item, index) in shopList" :key="index">
           <div class="item" @click="itemClick(item, index)">
             <div class="item-l">
               <img :src="item.goodsPic">
@@ -37,21 +37,15 @@
               <span class="sale-num">月售：{{item.biz30Day}}</span>
               <div class="r-t">
                 <span class="price">￥{{item.priceOut}}</span>
-                <!--<div class="sku" v-if="item.attrs.length" @click.stop="skuClick(item, index)">-->
-                  <!--<span>选规格</span>-->
-                  <!--<span class="count" v-if="item.sequence > 0">{{item.sequence}}</span>-->
-                <!--</div>-->
-                <!--<div class="add-item" v-else>-->
-                  <!--<div class="add-l" @click.stop="reduceClick(item, index)" v-if="item.sequence > 0">-->
-                    <!--<i class="icon mt-reduce-o"></i>-->
-                    <!--<span>{{item.sequence}}</span>-->
-                  <!--</div>-->
-                  <div class="add-r">
-                    <i class="icon mt-add-o" @click.stop="addClick(item, index)"></i>
-                    <span>{{item.num}}</span>
-                    <i class="icon mt-add-o" @click.stop="addClick(item, index)"></i>
+                <div class="add-item">
+                  <div class="add-l" @click.stop="reduceClick(index)" v-if="item.sequence">
+                    <i class="icon mt-reduce-o"></i>
+                    <span>{{item.sequence}}</span>
                   </div>
-                <!--</div>-->
+                <div class="add-r" @click.stop="addClick(index)">
+                  <i class="icon mt-add-o"></i>
+                </div>
+                </div>
               </div>
               <!--<div class="tags-c">-->
                 <!--<img class="tags" :src="itm.picture_url" v-for="(itm, idx) in item.product_label_picture_list" :key="idx">-->
@@ -154,20 +148,41 @@
       </div>
       <div class="c-m">
         <div class="l">
-          <span class="price" v-if="totalPrice > 0 || productCount > 0">￥<span>{{totalPrice}}</span></span>
           <div class="m-l">
-            <!--<span class="l-l">另需配送费￥{{shopInfo.support_pay}}</span>-->
-            <div class="l-m"></div>
-            <span class="l-r">支持自取</span>
+            <div class="prices" v-if="prices">￥{{prices}}</div>
+            <span class="l-l" v-if="shopInfo">另需配送费￥{{shopInfo.shopSendPrice/100}}</span>
           </div>
         </div>
-        <div class="m-r" :style="{'background-color': btnTitle === '去结算' ? '#F0D179' : '#2F2F2F'}" @click="orderClick">
-          <span :style="{color: btnTitle === '去结算' ? '#333' : '#666'}">{{btnTitle}}</span>
+        <div class="m-r" style="background: #2F2F2F;" >
+          <span v-if='shopInfo&&prices<shopInfo.shopSendMinprice/100'>{{shopInfo.shopSendMinprice/100}}起送</span>
+          <span v-if='shopInfo&&prices>=shopInfo.shopSendMinprice/100' class="jiesuan">去结算</span>
         </div>
       </div>
       <div class="cart-c">
-        <img mode='widthFix' :src="productCount > 0 ? 'http://ovyjkveav.bkt.clouddn.com/18-9-28/55877074.jpg' : 'http://ovyjkveav.bkt.clouddn.com/18-9-25/77715001.jpg'">
-        <span v-if="productCount > 0">{{productCount}}</span>
+        <img mode='widthFix' :src="prices > 0 ?yellow : block">
+        <span v-if="Price_len > 0">{{Price_len}}</span>
+      </div>
+      <div class="zhezhao">
+        <div class="top">
+          <div class="img">
+            <!--<img src="" alt="">-->
+          </div>
+          <div class="font">
+            <p>香菇</p>
+            <p>已选：</p>
+            <p>￥3.00</p>
+          </div>
+        </div>
+        <div class="guige">
+          <p>规格</p>
+          <div>
+            <i-row>
+              <i-col span="8" i-class="col-class">
+                <i-button bind:click="handleClick">默认按钮</i-button>
+              </i-col>
+            </i-row>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -186,13 +201,16 @@ export default {
     return {
       scrollTop:400,
       tagIndex: 0,
+      prices:null,
       pageIndex: 0,
       current:'tab1',
+      yellow:require('@/assets/img/yellow.jpg'),
+      block:require('@/assets/img/black.jpg'),
       starIndex:4,
       left: '40rpx',
       isActive:false,
       flag:false,
-      src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+      src:'',
       stars: [1, 2, 3, 4],
       pingfenList:[
         {
@@ -201,7 +219,7 @@ export default {
           stat:4,
           time:'2018.09.30',
           content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
-          img:['http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg']
+          img:[]
         },
         {
           name:'岁月清风',
@@ -209,9 +227,7 @@ export default {
           stat:4,
           time:'2018.09.30',
           content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
-          img:['http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-            'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-            'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg']
+          img:[]
         }
       ],
       tags:[
@@ -232,75 +248,23 @@ export default {
         }
       ],
       shipPic:[
-        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-        'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
+        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
+        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
       ],
       obj:{},
       Comment:{},
       shopList:null,
-      TypeList:null
+      TypeList:null,
+      cpId:null,
+      shopInfo:null,
+      Price_len:null,
+      flag1:false,
+      selectObj:null
     }
   },
   computed: {
     // ...mapState("shoppingCart", ["shopInfo", "foods", "spus", "commentInfo", "visibleSkuModal", "visibleItemModal", "skuInfo", "previewInfo"]),
-    // lineStyle() {
-    //   let left = this.left
-    //   let style = {left};
-    //   return jointStyle(style);
-    // },
-    // totalPrice() {
-    //   var price = 0
-    //   this.foods.map(item => price += item.totalPrice)
-    //   return parseFloat(price).toFixed(1);
-    // },
-    // productCount() {
-    //   var count = 0
-    //   this.foods.map(item => count += item.count)
-    //   return count
-    // },
-    // reduceTip() {
-    //   var content = this.shopInfo.prompt_text
-    //   var price = 0
-    //   this.foods.map(item => price += item.totalPrice)
-    //   if (price <= 0) return content
-    //   if (price < this.shopInfo.min_price) {
-    //     var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
-    //     return `还差 ${value}元 就能起送`
-    //   }
-    //   var activity_info = this.shopInfo.activity_info
-    //   for (let i = 0; i < activity_info.length; i++) {
-    //     const item = activity_info[i];
-    //     if (price < item.priceLower) {
-    //       var str = parseFloat(item.priceLower - price).toFixed(1)
-    //       if (i === 0) {
-    //         this.changeReduceFeeDataMut(0.0)
-    //         return `再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
-    //       } else {
-    //         var perItem = activity_info[i - 1];
-    //         this.changeReduceFeeDataMut(perItem.reduce)
-    //         return `已减${perItem.reduce}元 再买 ${str}元 可减 ${item.reduce}元 [去凑单]`
-    //       }
-    //     } else {
-    //       continue
-    //     }
-    //   }
-    //   var lastItem = activity_info[activity_info.length - 1]
-    //   this.changeReduceFeeDataMut(lastItem.priceLower)
-    //   return `已满 ${lastItem.priceLower} 可减 ${lastItem.reduce}`
-    // },
-    // btnTitle() {
-    //   var content = `${this.shopInfo.min_price}元起送`
-    //   var price = 0
-    //   this.foods.map(item => price += item.totalPrice)
-    //   if (price <= 0) return content
-    //   if (price < this.shopInfo.min_price) {
-    //     var value = parseFloat(this.shopInfo.min_price - price).toFixed(1)
-    //     return `还差${value}元`
-    //   } else {
-    //     return '去结算'
-    //   }
-    // },
     shopLogo(){
         return this.$store.state.home.shopLogo
       },
@@ -321,14 +285,8 @@ export default {
     this.flag=false
   },
   methods: {
-    // ...mapMutations("shoppingCart", ["changeReduceFeeDataMut", "changeSkuModalMut", "changeItemModalMut"]),
+    // ...mapMutations("shoppingCart", ["changeSpusDataMut", "changeSkuModalMut", "changeItemModalMut"]),
     // ...mapActions("shoppingCart", ["getMenuDataAction", "getCommentDataAction", "getCategoryMenuDataAction", "addItemAction", "reduceItemAction", "closeShoppingCartAction", "selectSkuAction", "changeSkuDataMut", "attrSelectAction", "changeSkuModalDataAction", "previewItemAction"]),
-    // orderClick() {
-    //   var price = 0
-    //   this.foods.map(item => price += item.totalPrice)
-    //   if (price < this.shopInfo.min_price) return;
-    //   this.closeShoppingCartAction()
-    // },
     scroll(e){
       console.log(e.mp.detail.scrollTop)
       if(e.mp.detail.scrollTop>=225){
@@ -352,76 +310,46 @@ export default {
     },
     categoryClick(item, index) {
       this.tagIndex = index;
-      var id=item.id
-      this.obj.goodsTypeId=id
-      this.getList(this.obj)
-      // this.getCategoryMenuDataAction({index})
+      this.cpId=item.id
     },
-    // menuClick() {
-    //   this.left = 40 + 'rpx'
-    //   this.pageIndex = 0
-    // },
-    // commentClick() {
-    //   this.left = 182 + 'rpx'
-    //   this.pageIndex = 1
-    //   this.getCommentDataAction()
-    // },
-    // shopClick() {
-    //   this.left = 325 + 'rpx'
-    //   this.pageIndex = 2
-    // },
-    // skuClick(item, index) {
-    //   this.selectSkuAction({item, index})
-    // },
-    addClick(item, index) {
-      this.shopList.forEach((item,indexs)=>{
+    addClick(index) {
+      var shopList=this.shopList
+      shopList.forEach((item,indexs)=>{
         if(index===indexs){
-          item.num+=1
-          console.log(item.num)
+          item.sequence+=1
+          if(item.specList.length>0){
+            this.flag1=true
+            this.selectObj=item
+            console.log(this.selectObj)
+          }
         }
       })
-      console.log(this.shopList)
+      this.shopList=JSON.parse(JSON.stringify(shopList))
+      this.prices=this.price()
     },
-    // reduceClick(item, index) {
-    //   this.reduceItemAction({item, index})
-    // },
-    // closeSku() {
-    //   this.changeSkuModalMut(false)
-    // },
-    // attrClick(itm, idx, setIdx) {
-    //   this.attrSelectAction({itm, idx, setIdx})
-    // },
-    // modalAdd() {
-    //   var skuInfo = this.skuInfo
-    //   const {item, index} = skuInfo
-    //   this.addItemAction({item, index})
-    //   this.changeSkuModalDataAction({num: 1})
-    // },
-    // modalReduce() {
-    //   var skuInfo = this.skuInfo
-    //   const {item, index} = skuInfo
-    //   this.reduceItemAction({item, index})
-    //   this.changeSkuModalDataAction({num: -1})
-    // },
-    // closePreview() {
-    //   this.changeItemModalMut(false)
-    // },
-    // itemClick(item ,index) {
-    //   this.previewItemAction({item, index})
-    // },
-    // previewAdd() {
-    //   var item = this.previewInfo
-    //   this.addItemAction({item, index:item.preIndex})
-    // },
-    // previewReduce() {
-    //   var item = this.previewInfo
-    //   this.reduceItemAction({item, index:item.preIndex})
-    // },
-    // previewAttr() {
-    //   this.changeItemModalMut(false)
-    //   var item = this.previewInfo
-    //   this.selectSkuAction({item, index: item.preIndex})
-    // },
+    reduceClick(index) {
+      var shopList=this.shopList
+      shopList.forEach((item,indexs)=>{
+        if(index===indexs){
+          if(item.sequence>0){
+            item.sequence-=1
+          }
+        }
+      })
+      this.shopList=JSON.parse(JSON.stringify(shopList))
+      this.prices=this.price()
+    },
+    price(){
+      var Price=0
+      this.Price_len=0
+      this.shopList.forEach((item,index)=>{
+        Price+=(parseInt(item.goodsPackAmount)+parseInt(item.priceOut))*item.sequence
+        this.Price_len+=item.sequence
+      })
+      return Price
+    },
+    itemClick(item ,index) {
+    },
     getQuery(){
       let id=this.$root.$mp.query.id
       this.obj.shopId=id
@@ -431,6 +359,7 @@ export default {
       this.getGoodsTypeList(id)
       this.getCommentList(id)
       this.getShops(id)
+      this.getList(this.obj)
     },
     // 商品列表
     getList(obj){
@@ -438,9 +367,13 @@ export default {
         if(response.data.returnObject){
           this.shopList=response.data.returnObject
           this.shopList.forEach((item,index)=>{
-            item.num=0
+            item.sequence=0
             item.priceOut=(item.priceOut/100).toFixed(2)
+            item.goodsPackAmount=(item.goodsPackAmount/100).toFixed(2)
+
           })
+        }else{
+          this.shopList=null
         }
       })
     },
@@ -449,10 +382,7 @@ export default {
       GoodsTypeList(shopId).then(response=>{
         if(response.data.returnObject){
           this.TypeList=response.data.returnObject.list
-          if(this.TypeList.length>0){
-            this.obj.goodsTypeId=this.TypeList[0].id
-            this.getList(this.obj)
-          }
+          this.cpId=this.TypeList[0].id
         }
       })
     },
@@ -470,11 +400,13 @@ export default {
       var longitude= this.$store.state.home.longitude
       var latitude= this.$store.state.home.latitude
       getShop(id,latitude,longitude).then(response=>{
+       if(response.data.returnObject){
+         this.shopInfo=response.data.returnObject
+       }
       })
     }
   },
   mounted() {
-    // this.getMenuDataAction()
     this.getQuery()
   }
 }
@@ -838,6 +770,17 @@ export default {
     background-color: #333;
     z-index: 990;
     width: 100%;
+    .zhezhao{
+      display: none;
+      position: fixed;
+      bottom: 0px;
+      left: 0px;
+      height: 900rpx;
+      width: 100%;
+      background:#fff;
+      z-index:9999;
+
+    }
     .c-t {
       display: flex;
       align-items: center;
@@ -868,8 +811,11 @@ export default {
           }
         }
         .m-l {
-          display: flex;
+          display: block;
           align-items: center;
+          .prices{
+            color: #fff;
+          }
           .l-l {
             font-size: 24rpx;
             color: $textDarkGray-color;
@@ -897,6 +843,15 @@ export default {
           font-size: 32rpx;
           color: $textDarkGray-color;
           font-weight: bold;
+        }
+        .jiesuan{
+          display: block;
+          width:200rpx;
+          height:88rpx;
+          color: #fff;
+          text-align: center;
+          line-height: 88rpx;
+          background: #2d8cf0;
         }
       }
     }

@@ -25,6 +25,7 @@ const mutations = {
   },
   changeSpusDataMut(state, info) {
     state.spus = info;
+    console.log(info)
   },
   changeCommentDataMut(state, info) {
     state.commentInfo = info
@@ -93,7 +94,7 @@ const actions = {
       commentMolds.push(tag)
     })
     commentData.commentMolds = commentMolds
-    
+
     commit('changeCommentDataMut', commentData)
   },
   getCategoryMenuDataAction({state, commit}, {index}) {

@@ -25,9 +25,9 @@ export function GoodsTypeList(shopId) {
   })
 }
 
-export function getShop(shopId, latitude, longitude) {
+export function getShop(id, latitude, longitude) {
   const data = qs.stringify({
-    shopId, latitude, longitude
+    id, latitude, longitude
   })
   return fly.request("xshop/getShopById", data, {
     method: "post",
