@@ -146,12 +146,12 @@
       </scroll-view>
     <div class="footer-c" v-if="pageIndex === 0">
       <div class="c-t">
-        <span>{{reduceTip}}</span>
+        <span>{{tit}}</span>
       </div>
       <div class="c-m">
         <div class="l">
           <div class="m-l">
-            <div class="prices" v-if="prices">￥{{prices}}</div>
+            <div class="prices pricesAll" v-if="prices">￥{{prices}}</div>
             <span class="l-l" v-if="shopInfo">另需配送费￥{{shopInfo.shopSendPrice/100}}</span>
           </div>
         </div>
@@ -272,7 +272,9 @@ export default {
       objAll:[],
       index:null,
       Discount:null,
-      manjian:null
+      manjian:null,
+      tit:'',
+      arr:null
     }
   },
   computed: {
@@ -297,10 +299,6 @@ export default {
     this.flag=false
   },
   created(){
-    this.Price_len=0
-    this.priceOut=0
-    this.Packing=0
-    this.PriceAll=0
   },
   methods: {
     // ...mapMutations("shoppingCart", ["changeSpusDataMut", "changeSkuModalMut", "changeItemModalMut"]),
@@ -355,7 +353,7 @@ export default {
             obj.goodsStock=item.goodsStock
             this.objAll.push(obj)
             item.sequence+=1
-            console.log(this.objAll)
+            // console.log(this.objAll)
           }
         }
       })
@@ -376,7 +374,7 @@ export default {
               }
             })
             this.objAll.splice(num[num.length-1],1)
-            console.log(this.objAll)
+            // console.log(this.objAll)
           }
         }
       })
@@ -394,6 +392,27 @@ export default {
       })
       this.PriceAll=this.priceOut+this.Packing
       this.prices=this.PriceAll
+      this.manjianF()
+    },
+    manjianF(){
+      this.tit=''
+     var f= this.manjian.findIndex((item,index)=>{
+          return parseInt(item.j1)>parseInt(this.prices)
+      })
+     if(f===-1){
+       this.arr=this.manjian[this.manjian.length-1]
+       this.tit=`已满${this.arr.j1},可减${this.arr.j2}`
+     }else if(f===0){
+       this.tit=''
+       this.arr=[{
+         j1:0,
+         j2:0
+       }]
+     }else{
+        f-=1
+       this.arr=this.manjian[f]
+       this.tit=`已满${this.arr.j1},可减${this.arr.j2}`
+     }
     },
     seleced(item,index){
       this.spanselect=index
@@ -530,6 +549,9 @@ export default {
   },
   mounted() {
     this.getQuery()
+  },
+  onLoad(){
+    Object.assign(this.$data, this.$options.data())
   }
 }
 </script>

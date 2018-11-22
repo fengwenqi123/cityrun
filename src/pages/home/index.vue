@@ -309,6 +309,9 @@ export default {
     this.topBannerData = homeData.topBannerData.data.top_banner_list
     this.bottomBanner = homeData.bannerData.data.rcmd_board_v9.mid_ad_banner.platinum_banner
     this.shopsList = homeData.homeList.data.poilist
+  },
+  onLoad(){
+    Object.assign(this.$data, this.$options.data())
   }
 };
 </script>

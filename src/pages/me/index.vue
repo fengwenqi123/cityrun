@@ -3,8 +3,9 @@
     <div class="header-c">
       <img src="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132" alt="">
       <div class="info-c">
-        <span class="name">fengwenqi</span>
-        <span class="phone">15214313256</span>
+        <!--<span class="name">fengwenqi</span>-->
+        <!--<span class="phone">15214313256</span>-->
+        <p class="login" @click="logins">登录/注册</p>
       </div>
     </div>
     <div class="list-c">
@@ -23,6 +24,8 @@
 </template>
 
 <script>
+  import {getUserInfos} from '@/api/me.js'
+
 export default {
   data() {
     return {
@@ -89,6 +92,29 @@ export default {
             }
         }
       })
+    },
+    logins(){
+      wx.login({
+        success (res) {
+          if(res.code){
+            wx.getUserInfo({
+              success: function(rest) {
+                console.log(rest)
+                getUserInfos(res.code,rest.iv,rest.encryptedData).then(response=>{
+                  console.log(response)
+                })
+                // var userInfo = res.userInfo
+                // var nickName = userInfo.nickName
+                // var avatarUrl = userInfo.avatarUrl
+                // var gender = userInfo.gender //性别 0：未知、1：男、2：女
+                // var province = userInfo.province
+                // var city = userInfo.city
+                // var country = userInfo.country
+              }
+            })
+          }
+        }
+      })
     }
   }
 }
@@ -100,7 +126,11 @@ export default {
     display: flex;
     align-items: center;
     height: 200rpx;
-    background-color: #FFD26B;
+    background-color: #2d8cf0;
+    .login{
+      color: #fff;
+      font-size: 28rpx;
+    }
     img {
       width: 120rpx;
       height: 120rpx;
