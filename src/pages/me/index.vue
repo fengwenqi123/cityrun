@@ -1,11 +1,14 @@
 <template>
   <div class="container">
     <div class="header-c">
-      <img src="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132" alt="">
+      <!--<img :src="userInfo.headPic" :onerror="errorImg01" alt="">-->
+      <img v-if="userInfo"  :src="userInfo.headPic" alt="">
+      <img v-if="!userInfo"  :src="errorImg01" alt="">
       <div class="info-c">
         <!--<span class="name">fengwenqi</span>-->
         <!--<span class="phone">15214313256</span>-->
-        <p class="login" @click="logins">登录/注册</p>
+        <p class="login"  v-if="!userInfo" @click="login">登录/注册</p>
+        <p class="username" v-if="userInfo">{{userInfo.nickName}}</p>
       </div>
     </div>
     <div class="list-c">
@@ -44,22 +47,6 @@ export default {
           icon: 'mt-customer-service-o',
           phone:'0571-88118899'
         },
-        // {
-        //   title: '美团红包',
-        //   icon: 'mt-red-packet-o',
-        //   path: '/pages/redPacket/main',
-        //   amount: 4
-        // },
-        // {
-        //   title: '商家代金券',
-        //   icon: 'mt-coupon-o',
-        //   path: '/pages/couponList/main',
-        //   amount: 10
-        // },
-        // {
-        //   title: '邀请有奖',
-        //   icon: 'mt-gift-o'
-        // },
         {
           title: '意见反馈',
           icon: 'mt-help-o',
@@ -69,11 +56,17 @@ export default {
           title: '协议和说明',
           icon: 'mt-protocol-o',
           path: '/pages/protocol/main'
-        }]
+        }],
+      userInfo:null,
+      errorImg01:'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132'
     }
   },
   computed: {
 
+  },
+  mounted(){
+    // 一进来看看用户是否授权过
+    // this.getSetting()
   },
   methods: {
     itemClick(e) {
@@ -93,29 +86,59 @@ export default {
         }
       })
     },
-    logins(){
+    login(){
+      var _this=this
       wx.login({
         success (res) {
-          if(res.code){
+          if (res.code) {
+            console.log(res.code)
+            _this.getSetting(res.code)
+          }
+        }
+      })
+    },
+    getSetting(code){
+      var _this=this
+      wx.getSetting({
+        success: function(res1){
+          if (res1.authSetting['scope.userInfo']) {
             wx.getUserInfo({
               success: function(rest) {
                 console.log(rest)
-                getUserInfos(res.code,rest.iv,rest.encryptedData).then(response=>{
-                  console.log(response)
-                })
-                // var userInfo = res.userInfo
-                // var nickName = userInfo.nickName
-                // var avatarUrl = userInfo.avatarUrl
-                // var gender = userInfo.gender //性别 0：未知、1：男、2：女
-                // var province = userInfo.province
-                // var city = userInfo.city
-                // var country = userInfo.country
+                    getUserInfos(code,rest.iv,rest.encryptedData).then(response=>{
+                      _this.userInfo=response.data.returnObject
+                      _this.$store.commit('submitUserInfo',_this.userInfo)
+                    })
+                //用户已经授权过
+                console.log('用户已经授权过')
               }
             })
+          }else{
+            console.log('用户还未授权过')
           }
         }
       })
     }
+    // getUserInfo1(){
+    //   console.log('click事件首先触发')
+    //   // 判断小程序的API，回调，参数，组件等是否在当前版本可用。  为false 提醒用户升级微信版本
+    //   // console.log(wx.canIUse('button.open-type.getUserInfo'))
+    //   if(wx.canIUse('button.open-type.getUserInfo')){
+    //     // 用户版本可用
+    //   }else{
+    //     console.log('请升级微信版本')
+    //   }
+    // },
+    // bindGetUserInfo(e) {
+    //   // console.log(e.mp.detail.rawData)
+    //   if (e.mp.detail.rawData){
+    //     //用户按了允许授权按钮
+    //     console.log('用户按了允许授权按钮')
+    //   } else {
+    //     //用户按了拒绝按钮
+    //     console.log('用户按了拒绝按钮')
+    //   }
+    // }
   }
 }
 </script>
@@ -130,6 +153,10 @@ export default {
     .login{
       color: #fff;
       font-size: 28rpx;
+    }
+    .username{
+      font-size: 28rpx;
+      color: #fff;
     }
     img {
       width: 120rpx;

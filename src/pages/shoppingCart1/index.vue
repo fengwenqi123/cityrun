@@ -199,7 +199,7 @@ import {jointStyle} from "@/utils/style";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {formatYMD} from '@/utils/formatTime'
 import {_array} from '@/utils/arrayExtension'
-import {Lists,commentList,GoodsTypeList,getShop} from '@/api/shoppingCart.js'
+import {Lists,commentList,GoodsTypeList,getShop,createOrder} from '@/api/shoppingCart.js'
 
 export default {
   data() {
@@ -274,7 +274,11 @@ export default {
       Discount:null,
       manjian:null,
       tit:'',
-      arr:null
+      arr:null,
+      isNew:null,
+      objCopy:null,
+      goodsIds:[],
+      goodsIdses:null
     }
   },
   computed: {
@@ -342,18 +346,25 @@ export default {
               if(item.goodsPriceDisAdd===1){
                 obj.priceOut=item.goodsPriceDis
                 obj.priceRoom=item.goodsPriceDis
+                obj.XjOut=item.priceOut-item.goodsPriceDis
+                obj.XjRoom=item.priceRoom-item.goodsPriceDis
               }
             }else{
               obj.priceOut=item.priceOut
               obj.priceRoom=item.priceRoom
+              obj.XjOut=0
+              obj.XjRoom=0
             }
             obj.index=this.index
+            obj.lengs=[]
+            obj.goodsTitle=item.goodsTitle
             obj.goodsId=item.id
             obj.goodsPackAmount=item.goodsPackAmount
             obj.goodsStock=item.goodsStock
-            this.objAll.push(obj)
             item.sequence+=1
-            // console.log(this.objAll)
+            obj.sequence=item.sequence
+            this.objAll.push(obj)
+            console.log(this.objAll)
           }
         }
       })
@@ -404,10 +415,7 @@ export default {
        this.tit=`已满${this.arr.j1},可减${this.arr.j2}`
      }else if(f===0){
        this.tit=''
-       this.arr=[{
-         j1:0,
-         j2:0
-       }]
+       this.arr=''
      }else{
         f-=1
        this.arr=this.manjian[f]
@@ -418,26 +426,34 @@ export default {
       this.spanselect=index
     },
     sure(obj){
+      var obj=JSON.parse(JSON.stringify(obj))
       var index=this.spanselect
       if(obj.goodsPriceDis&&obj.goodsPriceDisNum!==null&&obj.goodsPriceDisNum>obj.sequence){
         if(obj.goodsPriceDisAdd===1){
           obj.specList[index].priceOut=obj.goodsPriceDis
           obj.specList[index].priceRoom=obj.goodsPriceDis
+          obj.specList[index].XjOut=obj.specList[index].priceOut-obj.goodsPriceDis
+          obj.specList[index].XjRoom=obj.specList[index].priceRoom-item.goodsPriceDis
         }
       }else{
+        obj.specList[index].XjOut=0
+        obj.specList[index].XjRoom=0
         obj.specList[index].priceOut=(obj.specList[index].priceOut/100).toFixed(2)
         obj.specList[index].priceRoom=(obj.specList[index].priceRoom/100).toFixed(2)
       }
+      obj.specList[index].lengs=[]
       obj.specList[index].goodsPackAmount=(obj.specList[index].goodsPackAmount/100).toFixed(2)
+      obj.specList[index].goodsTitle=obj.goodsTitle
       obj.specList[index].index=this.index
-      this.objAll.push(obj.specList[index])
-      this.shopList.forEach((item,index)=>{
+      this.shopList.forEach((item,index1)=>{
         if(obj.id===item.id){
           item.sequence+=1
-          this.price()
+          obj.specList[index].sequence=item.sequence
         }
       })
+      this.objAll.push(obj.specList[index])
       console.log(this.objAll)
+      this.price()
       this.flag1=false
       this.selectObj=null
       // this.spanselect=0
@@ -445,14 +461,74 @@ export default {
     jiesuan(){
       var shopId=this.$root.$mp.query.id
       var type=1
-      var userId='23456'
-      var packPrice=this.Packing
+      var userId=this.$store.state.me.userInfo.id
+      var packPrice=parseInt(this.Packing)
+      var sendPrice=(this.shopInfo.shopSendPrice/100).toFixed(2)
       var shopTitle=this.$store.state.home.shopTitle
-      var sendType=1
+      var sendType='1'
       var userName='fwq'
       var userPhone=12345677
       var userAddress='11234234234'
       var payPrice=this.prices
+      var activityIds=''
+      if(this.new!==''){
+        activityIds+=`1-${this.new},`
+      }else if(this.arr!==''){
+        activityIds+=`2-${this.arr.j2}-${this.arr.j1}-${this.arr.j2},`
+      }
+      var xj=0
+      this.objAll.forEach((item,index)=>{
+        xj+=item.XjOut
+      })
+      if(xj>0){
+        activityIds+=`3-${xj}`
+      }
+      this.objCopy=JSON.parse(JSON.stringify(this.objAll))
+      this.goodsIds=[]
+      this.eachInfo()
+      var goodsIds=this.goodsIdses
+      var mark=''
+      createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds,goodsIds,mark).then(response=>{
+
+      })
+    },
+    // 选择商品类型归类
+    eachInfo(){
+      if(this.objCopy.length>0){
+        var num=this.objCopy.shift()
+        this.objCopy.forEach((item,index)=>{
+          if(num.goodsId===item.goodsId&&num.priceOut===item.priceOut){
+            if(!num.hasOwnProperty('id')){
+              num.lengs.push(index)
+            }else{
+              if(num.hasOwnProperty('id')==item.hasOwnProperty('id')){
+                num.lengs.push(index)
+              }else{
+                console.log('不同')
+              }
+            }
+          }
+        })
+        this.goodsIds.push(num)
+        if(num.lengs.length>0){
+          num.lengs.forEach((item,index)=>{
+            this.objCopy.splice(item-index,1)
+          })
+        }
+        this.eachInfo()
+      }else{
+        console.log(this.goodsIds)
+        var num=[]
+        this.goodsIds.forEach((item,index)=>{
+          var str=''
+          str+=`${item.goodsId}-${item.lengs.length+1}-${item.priceOut}-${item.goodsTitle}`
+          if(item.hasOwnProperty('id')){
+            str+=`-${item.id}`
+          }
+          num.push(str)
+        })
+        this.goodsIdses =JSON.stringify(num)
+      }
     },
     itemClick(item ,index) {
     },
@@ -511,6 +587,11 @@ export default {
       getShop(id,latitude,longitude).then(response=>{
        if(response.data.returnObject){
          this.shopInfo=response.data.returnObject
+         if(this.shopInfo.isNewUser==='y'){
+           this.isNew=true
+         }else{
+           this.isNew=false
+         }
          if(this.shopInfo.atList.length>0){
            var atList=this.shopInfo.atList
            var num=[]
@@ -520,6 +601,8 @@ export default {
              if(item.activityType==1){
                str='新用户立减'+(item.content/100)
                this.new=item.content/100
+             }else{
+               this.new=''
              }
              if(item.activityType==2){
                var con=item.content.split(',')
