@@ -1,12 +1,12 @@
 {
-  "navigationBarTitleText": "我的地址",
+  "navigationBarTitleText": "提交订单",
   "usingComponents": {
     "i-tabs": "../../../static/iview/tabs/index",
     "i-tab": "../../../static/iview/tab/index",
     "i-rate": "../../../static/iview/rate/index",
     "i-row": "../../../static/iview/row/index",
     "i-col": "../../../static/iview/col/index",
-    "i-action-sheet": "../../../static/iview/action-sheet/index",
-    "i-modal": "../../../static/iview/modal/index"
+    "i-tag": "../../../static/iview/tag/index",
+    "i-button": "../../../static/iview/button/index"
   }
 }

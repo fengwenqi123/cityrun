@@ -22,7 +22,7 @@
         <i  v-if="item.phone">{{item.phone}}</i>
       </div>
     </div>
-    <div class="btn" @click="logoutClick">退出账号</div>
+    <div class="btn"  v-if="userInfo" @click="logoutClick">退出账号</div>
   </div>
 </template>
 

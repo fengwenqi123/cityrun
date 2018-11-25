@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 import shoppingCart from './modules/shoppingCart'
 import home from './modules/home'
 import me from './modules/me'
+import address from './modules/address'
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -13,6 +14,7 @@ const store = new Vuex.Store({
   modules: {
     home,
     me,
+    address,
     shoppingCart: {
       namespaced: true,
       ...shoppingCart

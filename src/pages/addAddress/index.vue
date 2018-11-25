@@ -2,19 +2,15 @@
   <div class="container">
     <div class="name">
       <span>联系人：</span>
-      <input placeholder="请填写收货人的姓名" placeholder-style="font-size: 24rpx" auto-focus/>
+      <input v-model="forms.userName" placeholder="请填写收货人的姓名" placeholder-style="font-size: 24rpx" auto-focus/>
     </div>
     <div class="sex">
-      <div class="l"></div>
-      <radio-group class="radio-group" @bindchange="radioChange">
-        <label class="radio" v-for="(item,index) in items" :key="index">
-          <radio :value="item.name" :checked="item.checked"/>{{item.value}}
-        </label>
-      </radio-group>
+      <div class="man" @click="forms.gender=1" :class="{active:forms.gender===1}">先生</div>
+      <div class="wman" @click="forms.gender=2" :class="{active:forms.gender===2}">女士</div>
     </div>
     <div class="phone">
       <span>手机号：</span>
-      <input placeholder="请填写收货人手机号码" placeholder-style="font-size: 24rpx" auto-focus/>
+      <input v-model="forms.mobilePhone" placeholder="请填写收货人手机号码" placeholder-style="font-size: 24rpx" auto-focus/>
     </div>
     <div class="address">
       <span class="l">收货地址：</span>
@@ -27,33 +23,40 @@
       </div>
     </div>
     <div class="house-num">
-      <span>门牌号：</span>
-      <input placeholder="详细地址，例：16号楼5楼301室" placeholder-style="font-size: 24rpx" auto-focus/>
+      <span>详细地址：</span>
+      <input v-model="forms.addressInfo" placeholder="详细地址，例：16号楼5楼301室" placeholder-style="font-size: 24rpx" auto-focus/>
     </div>
-    <div class="submit">
+    <div class="submit" v-if="!flag"  @click="submits()">
       <span>保存地址</span>
+    </div>
+    <div class="submit" v-if="flag"  @click="submits1()">
+      <span>修改地址</span>
     </div>
   </div>
 </template>
 
 <script>
+  import {submitAddress,updateAddress} from '@/api/addAddress.js'
 export default {
   data(){
     return{
       information:{
         address:'点击选择',
-        latitude:'',
-        longitude:''
       },
-      items: [
-        {name: 'USA', value: '美国'},
-        {name: 'CHN', value: '中国', checked: 'true'},
-        {name: 'BRA', value: '巴西'},
-        {name: 'JPN', value: '日本'},
-        {name: 'ENG', value: '英国'},
-        {name: 'TUR', value: '法国'},
-      ]
-
+      forms:{
+        userId:null,
+        userName:null,
+        mobilePhone:null,
+        province:null,
+        city:null,
+        area:null,
+        addressInfo:null,
+        longitude:null,
+        latitude:null,
+        gender:null
+      },
+      flag:false,
+      index:null
     }
   },
   methods:{
@@ -62,14 +65,63 @@ export default {
       wx.chooseLocation({
         success: function (res) {
           _this.information.address=res.name
-          _this.information.latitude=res.latitude
-          _this.information.longitude=res.longitude
+          _this.forms.latitude=res.latitude
+          _this.forms.longitude=res.longitude
+          _this.forms.address_info=res.address
+         _this.getAddress(_this.forms.latitude,_this.forms.longitude)
         }
       })
     },
-    radioChange: function(e) {
-      console.log('radio发生change事件，携带value值为：', e.detail.value)
+    getQuery(){
+      var userInfo=this.$store.state.me.userInfo
+      this.forms.userId=userInfo.id
+      let active=this.$root.$mp.query.active
+      if(active){
+        this.forms.userId=this.$store.state.address.addressInfo.userId
+        this.forms.id=this.$store.state.address.addressInfo.id
+        this.forms.userName=this.$store.state.address.addressInfo.userName
+        this.forms.mobilePhone=this.$store.state.address.addressInfo.mobilePhone
+        this.forms.province=this.$store.state.address.addressInfo.province
+        this.forms.city=this.$store.state.address.addressInfo.city
+        this.forms.area=this.$store.state.address.addressInfo.area
+        this.forms.addressInfo=this.$store.state.address.addressInfo.addressInfo
+        this.forms.longitude=this.$store.state.address.addressInfo.longitude
+        this.forms.latitude=this.$store.state.address.addressInfo.latitude
+        this.forms.gender=this.$store.state.address.addressInfo.gender
+        this.information.address=`${this.forms.province}${this.forms.city}${this.forms.area}`
+        this.flag=true
+        console.log(this.forms)
+      }
+    },
+    getAddress(latitude,longitude){
+      var _this=this
+      wx.request({
+        header:{
+          "Content-Type": "application/text"
+        },
+        url:'https://apis.map.qq.com/ws/geocoder/v1/?location='+latitude+','+longitude+'&key=MVGBZ-R2U3U-W5CVY-2PQID-AT4VZ-PDF35',
+        success: function(res) {
+          console.log(res.data.result.address_component)
+          var address=res.data.result.address_component
+          if(address){
+            _this.forms.province=address.province
+            _this.forms.city=address.city
+            _this.forms.area=address.district
+          }
+        }
+      })
+    },
+    submits(){
+      submitAddress(this.forms).then(response=>{
+      })
+    },
+    submits1(){
+      updateAddress(this.forms).then(response=>{
+      })
     }
+  },
+  mounted(){
+    this.getQuery()
   }
 }
 </script>
@@ -102,36 +154,23 @@ export default {
     display: flex;
     align-items: center;
     margin-left: 30rpx;
+    justify-content: center;
     padding-right: 30rpx;
     height: 88rpx;
     border-bottom: 2rpx solid $spLine-color;
-    .l {
-      width: 160rpx;
+    div{
+      width: 120rpx;
+      height: 52rpx;
+      line-height: 52rpx;
+      text-align: center;
+      border: 1px solid #ccc;
     }
-    .m {
-      display: flex;
-      i {
-        font-size: 32rpx;
-        color: $theme-color;
-      }
-      span {
-        font-size: 28rpx;
-        color: $textBlack-color;
-        margin-left: 20rpx;
-      }
+    .wman{
+      margin-left: 50rpx;
     }
-    .r {
-      display: flex;
-      margin-left: 60rpx;
-      i {
-        font-size: 38rpx;
-        color: $textGray-color;
-      }
-      span {
-        font-size: 28rpx;
-        color: $textBlack-color;
-        margin-left: 20rpx;
-      }
+    .active{
+      background: #2d8cf0;
+      color: #fff;
     }
   }
   .phone {
@@ -205,11 +244,12 @@ export default {
     align-items: center;
     justify-content: center;
     height: 76rpx;
-    background-color: $theme-color;
+    color: #fff;
+    background-color: #2d8cf0;
     border-radius: 8rpx;
     span {
       font-size: 28rpx;
-      color: $textBlack-color;
+      color: #fff;
     }
   }
 }

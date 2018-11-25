@@ -398,12 +398,14 @@ export default {
       this.priceOut=0
       this.Packing=0
       this.objAll.forEach((item,index)=>{
-        this.priceOut+=parseInt(item.priceOut)
-        this.Packing+=parseInt(item.goodsPackAmount)
+        this.priceOut+=item.priceOut
+        this.Packing+=item.goodsPackAmount
       })
+      // 商品总价（不含活动）
       this.PriceAll=this.priceOut+this.Packing
       this.prices=this.PriceAll
       this.manjianF()
+
     },
     manjianF(){
       this.tit=''
@@ -412,6 +414,7 @@ export default {
       })
      if(f===-1){
        this.arr=this.manjian[this.manjian.length-1]
+       // this.prices=this.prices-this.arr.j2
        this.tit=`已满${this.arr.j1},可减${this.arr.j2}`
      }else if(f===0){
        this.tit=''
@@ -419,6 +422,7 @@ export default {
      }else{
         f-=1
        this.arr=this.manjian[f]
+       // this.prices=this.prices-this.arr.j2
        this.tit=`已满${this.arr.j1},可减${this.arr.j2}`
      }
     },
@@ -438,12 +442,12 @@ export default {
       }else{
         obj.specList[index].XjOut=0
         obj.specList[index].XjRoom=0
-        obj.specList[index].priceOut=(obj.specList[index].priceOut/100).toFixed(2)
-        obj.specList[index].priceRoom=(obj.specList[index].priceRoom/100).toFixed(2)
+        obj.specList[index].priceOut=obj.specList[index].priceOut/100
+        obj.specList[index].priceRoom=obj.specList[index].priceRoom/100
       }
       obj.specList[index].lengs=[]
-      obj.specList[index].goodsPackAmount=(obj.specList[index].goodsPackAmount/100).toFixed(2)
-      obj.specList[index].goodsTitle=obj.goodsTitle
+      obj.specList[index].goodsPackAmount=obj.specList[index].goodsPackAmount/100
+      obj.specList[index].goodsTitle=obj.goodsTitle+'('+obj.specList[index].title+')'
       obj.specList[index].index=this.index
       this.shopList.forEach((item,index1)=>{
         if(obj.id===item.id){
@@ -459,38 +463,39 @@ export default {
       // this.spanselect=0
     },
     jiesuan(){
-      var shopId=this.$root.$mp.query.id
-      var type=1
-      var userId=this.$store.state.me.userInfo.id
-      var packPrice=parseInt(this.Packing)
-      var sendPrice=(this.shopInfo.shopSendPrice/100).toFixed(2)
-      var shopTitle=this.$store.state.home.shopTitle
-      var sendType='1'
-      var userName='fwq'
-      var userPhone=12345677
-      var userAddress='11234234234'
-      var payPrice=this.prices
-      var activityIds=''
-      if(this.new!==''){
-        activityIds+=`1-${this.new},`
-      }else if(this.arr!==''){
-        activityIds+=`2-${this.arr.j2}-${this.arr.j1}-${this.arr.j2},`
-      }
-      var xj=0
-      this.objAll.forEach((item,index)=>{
-        xj+=item.XjOut
-      })
-      if(xj>0){
-        activityIds+=`3-${xj}`
-      }
-      this.objCopy=JSON.parse(JSON.stringify(this.objAll))
-      this.goodsIds=[]
-      this.eachInfo()
-      var goodsIds=this.goodsIdses
-      var mark=''
-      createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds,goodsIds,mark).then(response=>{
-
-      })
+      // var shopId=this.$root.$mp.query.id
+      // var type=1
+      // var userId=this.$store.state.me.userInfo.id
+      // var packPrice=(this.Packing*100).toFixed(0)
+      // var sendPrice=this.shopInfo.shopSendPrice
+      // var shopTitle=this.$store.state.home.shopTitle
+      // var sendType='1'
+      // var userName='fwq'
+      // var userPhone=12345677
+      // var userAddress='11234234234'
+      // var payPrice=(this.prices*100).toFixed(0)
+      // var activityIds=''
+      // if(this.new!==''){
+      //   activityIds+=`1-${(this.new*100).toFixed(0)},`
+      // }else if(this.arr!==''){
+      //   activityIds+=`2-${(this.arr.j2*100).toFixed(0)}-${(this.arr.j1*100).toFixed(0)}-${(this.arr.j2*100).toFixed(0)},`
+      // }
+      // var xj=0
+      // this.objAll.forEach((item,index)=>{
+      //   xj+=item.XjOut
+      // })
+      // if(xj>0){
+      //   activityIds+=`3-${(xj*100).toFixed(0)}`
+      // }
+      // this.objCopy=JSON.parse(JSON.stringify(this.objAll))
+      // this.goodsIds=[]
+      // this.eachInfo()
+      // var goodsIds=this.goodsIdses
+      // var mark=''
+      // createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds,goodsIds,mark).then(response=>{
+      //
+      // })
+      wx.navigateTo({url: '/pages/submitOrder1/main'})
     },
     // 选择商品类型归类
     eachInfo(){
@@ -521,13 +526,15 @@ export default {
         var num=[]
         this.goodsIds.forEach((item,index)=>{
           var str=''
-          str+=`${item.goodsId}-${item.lengs.length+1}-${item.priceOut}-${item.goodsTitle}`
+          str+=`${item.goodsId}-${item.lengs.length+1}-${(item.priceOut*100).toFixed(0)}-${item.goodsTitle}`
           if(item.hasOwnProperty('id')){
             str+=`-${item.id}`
+          }else{
+            str+='-0'
           }
           num.push(str)
         })
-        this.goodsIdses =JSON.stringify(num)
+        this.goodsIdses =num.join(',')
       }
     },
     itemClick(item ,index) {
@@ -550,11 +557,11 @@ export default {
           this.shopList=response.data.returnObject
           this.shopList.forEach((item,index)=>{
             item.sequence=0
-            item.priceRoom=(item.priceRoom/100).toFixed(2)
-            item.priceOut=(item.priceOut/100).toFixed(2)
-            item.goodsPackAmount=(item.goodsPackAmount/100).toFixed(2)
+            item.priceRoom=item.priceRoom/100
+            item.priceOut=item.priceOut/100
+            item.goodsPackAmount=item.goodsPackAmount/100
             if(item.goodsPriceDis){
-              item.goodsPriceDis=(item.goodsPriceDis/100).toFixed(2)
+              item.goodsPriceDis=item.goodsPriceDis/100
             }
           })
         }else{

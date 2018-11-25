@@ -14,9 +14,6 @@ const me = {
       state.avgStar = obj.avgStar
       state.orderCount = obj.orderCount
       state.shopTitle = obj.shopTitle
-    },
-    abc(state) {
-      console.log(state.address)
     }
   }
 }
