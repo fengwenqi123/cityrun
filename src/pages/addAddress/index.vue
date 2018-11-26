@@ -32,11 +32,13 @@
     <div class="submit" v-if="flag"  @click="submits1()">
       <span>修改地址</span>
     </div>
+    <i-message id="message" />
   </div>
 </template>
 
 <script>
   import {submitAddress,updateAddress} from '@/api/addAddress.js'
+  const { $Message } = require('../../../static/iview/base/index');
 export default {
   data(){
     return{
@@ -73,25 +75,31 @@ export default {
       })
     },
     getQuery(){
-      var userInfo=this.$store.state.me.userInfo
-      this.forms.userId=userInfo.id
-      let active=this.$root.$mp.query.active
-      if(active){
-        this.forms.userId=this.$store.state.address.addressInfo.userId
-        this.forms.id=this.$store.state.address.addressInfo.id
-        this.forms.userName=this.$store.state.address.addressInfo.userName
-        this.forms.mobilePhone=this.$store.state.address.addressInfo.mobilePhone
-        this.forms.province=this.$store.state.address.addressInfo.province
-        this.forms.city=this.$store.state.address.addressInfo.city
-        this.forms.area=this.$store.state.address.addressInfo.area
-        this.forms.addressInfo=this.$store.state.address.addressInfo.addressInfo
-        this.forms.longitude=this.$store.state.address.addressInfo.longitude
-        this.forms.latitude=this.$store.state.address.addressInfo.latitude
-        this.forms.gender=this.$store.state.address.addressInfo.gender
-        this.information.address=`${this.forms.province}${this.forms.city}${this.forms.area}`
-        this.flag=true
-        console.log(this.forms)
-      }
+      var _this=this
+      wx.getStorage({
+        key: 'userInfo',
+        success (res) {
+          var userInfo=res.data
+          _this.forms.userId=userInfo.id
+          let active=_this.$root.$mp.query.active
+          if(active){
+           _this.forms.userId=_this.$store.state.address.addressInfo.userId
+           _this.forms.id=_this.$store.state.address.addressInfo.id
+           _this.forms.userName=_this.$store.state.address.addressInfo.userName
+           _this.forms.mobilePhone=_this.$store.state.address.addressInfo.mobilePhone
+           _this.forms.province=_this.$store.state.address.addressInfo.province
+           _this.forms.city=_this.$store.state.address.addressInfo.city
+           _this.forms.area=_this.$store.state.address.addressInfo.area
+           _this.forms.addressInfo=_this.$store.state.address.addressInfo.addressInfo
+           _this.forms.longitude=_this.$store.state.address.addressInfo.longitude
+           _this.forms.latitude=_this.$store.state.address.addressInfo.latitude
+           _this.forms.gender=_this.$store.state.address.addressInfo.gender
+           _this.information.address=`${_this.forms.province}${_this.forms.city}${_this.forms.area}`
+           _this.flag=true
+            console.log(_this.forms)
+          }
+        }
+      })
     },
     getAddress(latitude,longitude){
       var _this=this
@@ -113,15 +121,36 @@ export default {
     },
     submits(){
       submitAddress(this.forms).then(response=>{
+        if(response.data.resultCode===1000){
+          $Message({
+            content: '保存成功',
+            type: 'success'
+          })
+          setTimeout(()=>{
+            wx.navigateTo({url: '/pages/addressList/main'})
+          },2000)
+        }
       })
     },
     submits1(){
       updateAddress(this.forms).then(response=>{
+        if(response.data.resultCode===1000){
+          $Message({
+            content: '保存成功',
+            type: 'success'
+          })
+          setTimeout(()=>{
+            wx.navigateTo({url: '/pages/addressList/main'})
+          },2000)
+        }
       })
     }
   },
   mounted(){
     this.getQuery()
+  },
+  onLoad(){
+    Object.assign(this.$data, this.$options.data())
   }
 }
 </script>

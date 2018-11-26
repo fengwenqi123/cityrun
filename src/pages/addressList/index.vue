@@ -67,15 +67,31 @@
 
     },
     getQuery(){
-      var userInfo=this.$store.state.me.userInfo
-      this.forms.userId=userInfo.id
-      this.forms.pageNum=1
-      this.forms.pageSize=5000
-      this.getAddress()
+      var _this=this
+      wx.getStorage({
+        key: 'userInfo',
+        success (res) {
+          console.log(res.data)
+          if(res.data){
+            _this.forms.userId=res.data.id
+            _this.forms.pageNum=1
+            _this.forms.pageSize=5000
+            _this.getAddress()
+          }else{
+          }
+        }
+      })
+      // var userInfo=this.$store.state.me.userInfo
+      // this.forms.userId=userInfo.id
+      // this.forms.pageNum=1
+      // this.forms.pageSize=5000
+      // this.getAddress()
     },
     getAddress(){
       getAddress(this.forms).then(response=>{
-        this.itemList=response.data.returnObject.list
+        if(response.data.returnObject){
+          this.itemList=response.data.returnObject.list
+        }
       })
     },
     // 选中

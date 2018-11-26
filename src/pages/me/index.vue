@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="list-c">
-      <div class="item" v-for="(item, index) in itemList" :key="index" :data-index="index" @click="itemClick(item)">
+      <div class="item" v-if="item.flag" v-for="(item, index) in itemList" :key="index" :data-index="index" @click="itemClick(item)">
         <div class="item-l">
           <i class='icon' :class="item.icon"></i>
           <span class="title">{{item.title}}</span>
@@ -36,26 +36,31 @@ export default {
         {
           title: '我的地址',
           icon: 'mt-my-location-o',
-          path: '/pages/addressList/main'
+          path: '/pages/addressList/main',
+          flag:false
         },
         {
           title: '在线客服',
-          icon: 'mt-customer-service-o'
+          icon: 'mt-customer-service-o',
+          flag:true
         },
         {
           title: '客服热线',
           icon: 'mt-customer-service-o',
-          phone:'0571-88118899'
+          phone:'0571-88118899',
+          flag:true
         },
         {
           title: '意见反馈',
           icon: 'mt-help-o',
-          path: '/pages/feedback/main'
+          path: '/pages/feedback/main',
+          flag:true
         },
         {
           title: '协议和说明',
           icon: 'mt-protocol-o',
-          path: '/pages/protocol/main'
+          path: '/pages/protocol/main',
+          flag:true
         }],
       userInfo:null,
       errorImg01:'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132'
@@ -65,23 +70,49 @@ export default {
 
   },
   mounted(){
-    // 一进来看看用户是否授权过
-    // this.getSetting()
+    this.getUserId()
   },
   methods: {
+    getUserId(){
+      var _this=this
+      wx.getStorage({
+        key: 'userInfo',
+        success (res) {
+          console.log(res.data)
+          _this.userInfo=res.data
+          if(res.data){
+            _this.itemList[0].flag=true
+          }else{
+            _this.itemList[0].flag=false
+          }
+        }
+      })
+      // if(userInfo.id){
+      //   console.log(111)
+      //   this.userInfo=userInfo
+      //   this.itemList[0].flag=true
+      // }else{
+      //   this.itemList[0].flag=false
+      // }
+    },
     itemClick(e) {
       wx.navigateTo({url: e.path})
     },
     logoutClick() {
+      var _this=this
       wx.showModal({
           title: '确认退出？',
           content: '退出登录后将无法查看订单，重新登录即可查看',
           confirmColor: '#FFC24A',
           success: function(res) {
             if (res.confirm) {
-              resolve('ok')
+              _this.userInfo=null
+              wx.setStorage({
+                key:"userInfo",
+                data:null
+              })
+              _this.getUserId()
             } else if (res.cancel) {
-              resolve('cancle')
             }
         }
       })
@@ -108,6 +139,11 @@ export default {
                     getUserInfos(code,rest.iv,rest.encryptedData).then(response=>{
                       _this.userInfo=response.data.returnObject
                       _this.$store.commit('submitUserInfo',_this.userInfo)
+                      wx.setStorage({
+                        key:"userInfo",
+                        data:_this.userInfo
+                      })
+                      _this.getUserId()
                     })
                 //用户已经授权过
                 console.log('用户已经授权过')

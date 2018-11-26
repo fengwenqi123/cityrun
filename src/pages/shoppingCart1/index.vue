@@ -487,10 +487,10 @@ export default {
       // if(xj>0){
       //   activityIds+=`3-${(xj*100).toFixed(0)}`
       // }
-      // this.objCopy=JSON.parse(JSON.stringify(this.objAll))
-      // this.goodsIds=[]
-      // this.eachInfo()
-      // var goodsIds=this.goodsIdses
+      this.objCopy=JSON.parse(JSON.stringify(this.objAll))
+      this.goodsIds=[]
+      this.eachInfo()
+      var goodsIds=this.goodsIdses
       // var mark=''
       // createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds,goodsIds,mark).then(response=>{
       //

@@ -1,12 +1,13 @@
 const me = {
   state: {
-    userInfo: {}
+    userInfo: {},
+    id: null
 
   },
   mutations: {
     submitUserInfo(state, obj) {
-      console.log(obj)
       state.userInfo = obj
+      state.id = obj.id
     },
     submitShopInfo(state, obj) {
       state.shopLogo = obj.shopLogo
