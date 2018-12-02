@@ -1,12 +1,17 @@
 {
   "pages": [
+
     "pages/home/main",
+    "pages/examine/main",
     "pages/addressList/main",
+    "pages/bz/main",
+    "pages/business/main",
     "pages/addAddress/main",
     "pages/shoppingCart/main",
     "pages/shoppingCart1/main",
     "pages/submitOrder/main",
     "pages/submitOrder1/main",
+    "pages/evaluate/main",
     "pages/me/main",
     "pages/expiredRedPacket/main",
     "pages/expiredCoupon/main",
@@ -23,7 +28,8 @@
     "pages/protocol/main",
     "pages/feedback/main",
     "pages/pickProtocol/main",
-    "pages/orderDetail/main"
+    "pages/orderDetail/main",
+    "pages/alert/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -33,7 +39,7 @@
   },
   "tabBar": {
     "color": "#999",
-    "selectedColor": "#000",
+    "selectedColor": "#2d8cf0",
     "backgroundColor": "#fff",
     "borderStyle": "black",
     "list": [{

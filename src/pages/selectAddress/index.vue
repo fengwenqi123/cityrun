@@ -63,6 +63,7 @@
 
 <script>
 import {addressData} from './data'
+import {getAddress} from '@/api/addAddress.js'
 
 export default {
   data() {
@@ -76,10 +77,25 @@ export default {
     addAddress() {
        wx.navigateTo({url: '/pages/addAddress/main'})
     },
+    getAddress(){
+      var _this=this
+      var loginInfo = wx.getStorageSync('loginInfo')
+      if(loginInfo){
+        var obj={}
+        obj.userId=loginInfo.id
+        obj.pageNum=1
+        obj.pageSize=5000
+        getAddress(obj).then(response=>{
+          if(response.data.returnObject){
+            _this.myAddress=response.data.returnObject.list
+          }
+        })
+      }
+    },
     Repositioning(){
         let _this = this;
         wx.getLocation({
-          // type: 'wgs84',
+          type: 'gcj02',
           success: function (res) {
             let latitude,longitude;
             latitude = res.latitude.toString();
@@ -91,8 +107,10 @@ export default {
               url:'https://apis.map.qq.com/ws/geocoder/v1/?location='+latitude+','+longitude+'&key=MVGBZ-R2U3U-W5CVY-2PQID-AT4VZ-PDF35',
               success: function(res) {
                 var obj={}
-                obj.address= res.data.result.address_component.street_number
+                obj.address= res.data.result.address_reference.landmark_l2.title
                 obj.city=res.data.result.address_component.city
+                obj.latitude = res.data.result.location.lat
+                obj.longitude=res.data.result.location.lng
                 _this.$store.commit('submitAddress',obj)
               }
             });
@@ -110,7 +128,7 @@ export default {
     }
   },
   mounted() {
-    this.myAddress = addressData.myAddress.data
+   this.getAddress()
     this.nearbyAddress = addressData.nearbyAddress.data.mapPoiVo
   }
 }

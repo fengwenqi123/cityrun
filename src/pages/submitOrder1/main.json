@@ -7,6 +7,8 @@
     "i-row": "../../../static/iview/row/index",
     "i-col": "../../../static/iview/col/index",
     "i-tag": "../../../static/iview/tag/index",
-    "i-button": "../../../static/iview/button/index"
+    "i-button": "../../../static/iview/button/index",
+    "i-modal": "../../../static/iview/modal/index",
+    "i-message": "../../../static/iview/message/index"
   }
 }

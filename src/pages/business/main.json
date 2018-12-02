@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "商家入驻",
+  "usingComponents": {
+    "i-radio-group": "../../../static/iview/radio-group/index",
+    "i-radio": "../../../static/iview/radio/index",
+    "i-message": "../../../static/iview/message/index",
+    "i-input": "../../../static/iview/input/index",
+    "i-panel": "../../../static/iview/panel/index",
+    "i-toast": "../../../static/iview/toast/index"
+  }
+}

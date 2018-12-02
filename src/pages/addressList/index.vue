@@ -22,7 +22,7 @@
             <div class="bianji" @click="bianji(item)">
               编辑
             </div>
-            <div class="det" @click="handleOpen1">
+            <div class="det" @click="handleOpen1(item.id)">
               删除
             </div>
           </div>
@@ -36,17 +36,20 @@
     <i-modal title="提示" :visible="visible1" @ok="oks" @cancel="handleClose1">
       <view>确认删除吗？</view>
     </i-modal>
+    <i-message id="message" />
     </div>
 </template>
 
 <script>
-  import {getAddress,DefaultAddress} from '@/api/addAddress.js'
+  import {getAddress,DefaultAddress,updateAddress} from '@/api/addAddress.js'
+  const { $Message } = require('../../../static/iview/base/index');
   export default {
   data() {
     return {
       itemList: [],
       visible1: false,
-      forms:{}
+      forms:{},
+      id:null
     }
   },
   methods: {
@@ -57,14 +60,28 @@
       this.$store.commit('submitAddressInfo',item)
       wx.navigateTo({url: '/pages/addAddress/main?active=1'})
     },
-    handleOpen1 () {
+    handleOpen1 (id) {
       this.visible1=true
+      this.id=id
     },
     handleClose1 () {
       this.visible1= false
     },
     oks(){
+      var obj={}
+      obj.id=this.id
+      obj.status=0
+      updateAddress(obj).then(response=>{
+        if(response.data.resultCode===1000) {
+          $Message({
+            content: '保存成功',
+            type: 'success'
+          })
+          this.getQuery()
+        }
 
+      })
+      this.visible1= false
     },
     getQuery(){
       var _this=this

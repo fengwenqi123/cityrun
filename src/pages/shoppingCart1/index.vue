@@ -60,30 +60,31 @@
       <div class="comment-c" v-if="pageIndex === 1">
       <div class="score">
         <div class="num">
-          <p class="p1">4.1</p>
+          <p class="p1" v-if="shopInfo.avgStar">{{shopInfo.avgStar}}</p>
+          <p class="p1" v-if="!shopInfo.avgStar">暂无</p>
           <p class="p2">商家评分</p>
         </div>
         <div class="star">
           <i-rate
-            :value="starIndex">
+            :value="shopInfo.avgStar">
           </i-rate>
         </div>
       </div>
-        <div class="comment-list" v-for="(item,index) in pingfenList">
+        <div class="comment-list" v-if="pingfenList" v-for="(item,index) in pingfenList" :key="index">
           <div class="top">
             <div class="top_l">
-              <p>{{item.name}}</p>
-              <p><i-rate :value="item.stat"></i-rate></p>
+              <p>{{item.userNickName}}</p>
+              <p><i-rate :value="item.commentStar"></i-rate></p>
             </div>
             <div class="top_r">
-              <div class="time">{{item.time}}</div>
+              <div class="time">{{item.createTime}}</div>
             </div>
           </div>
           <div class="main">
            {{item.content}}
           </div>
-          <div class="pic" v-if="item.img.length>0">
-            <img v-for="(item1,index1) in item.img" :src="item1" alt="">
+          <div class="pic" v-if="item.commentPic.length>0">
+            <img v-for="(item1,index1) in item.commentPic" :src="item1" alt="">
           </div>
         </div>
       </div>
@@ -91,7 +92,7 @@
         <div class="top">
           <h4>活动与公告</h4>
           <div>
-            <p v-for="(item,index) in tags" :key="index">
+            <p v-for="(item,index) in tags" :key="index" v-if="item.name!==''">
               <i-tag
                 class="i-tags"
                 :name="item.type"
@@ -100,9 +101,8 @@
               </i-tag>
               {{item.name}}
             </p>
-            <div class="Notice">
-              公告：中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配中国餐饮OTO连锁品牌-重庆麻辣烫。配
-            </div>
+            <div class="Notice" v-if="shopNotice.length>0">
+              公告：{{shopNotice}}</div>
           </div>
         </div>
         <div class="info">
@@ -110,28 +110,29 @@
           <ul class="clearfix">
             <li>
               <span>商家名称</span>
-              <span>重庆麻辣烫</span>
+              <span>{{shopTitle}}</span>
             </li>
             <li>
               <span>商家品类</span>
-              <span>美食</span>
+              <span>{{shopInfo.shopType===1?'美食':'超市'}}</span>
             </li>
             <li>
               <span>商家地址</span>
-              <span>浙江省杭州市余杭区五常街道瑞谷中心6装206室</span>
+              <span>{{shopInfo.addressProvince}}{{shopInfo.addressCity}}{{shopInfo.addressArea}}{{shopInfo.addressInfo}}</span>
             </li>
             <li>
               <span>商家电话</span>
-              <span>18758859435</span>
+              <span v-if="shopInfo.userContact">{{shopInfo.userContact}}</span>
+              <span v-if="!shopInfo.userContact">暂无</span>
             </li>
           </ul>
         </div>
-        <div class="pic">
-          <h4>商家图片</h4>
-          <div class="shipPic">
-            <img v-for="(item,index) in shipPic" :key="index" :src="item" alt="">
-          </div>
-        </div>
+        <!--<div class="pic">-->
+          <!--<h4>商家图片</h4>-->
+          <!--<div class="shipPic">-->
+            <!--<img v-for="(item,index) in shipPic" :key="index" :src="item" alt="">-->
+          <!--</div>-->
+        <!--</div>-->
       </div>
     </scroll-view>
     <i-tabs :current="current" @change="handleChange" v-if="flag" class="tabs">
@@ -164,6 +165,8 @@
         <img mode='widthFix' :src="prices > 0 ?yellow : block">
         <span v-if="Price_len > 0">{{Price_len}}</span>
       </div>
+      <div class="fc" v-if="flag1&&selectObj" @click="fcClose">
+      </div>
       <div class="zhezhao" v-if="flag1&&selectObj">
         <div class="top">
           <div class="img">
@@ -190,6 +193,7 @@
         </div>
       </div>
     </div>
+    <i-toast id="toast" />
   </div>
 </template>
 
@@ -200,6 +204,7 @@ import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {formatYMD} from '@/utils/formatTime'
 import {_array} from '@/utils/arrayExtension'
 import {Lists,commentList,GoodsTypeList,getShop,createOrder} from '@/api/shoppingCart.js'
+const { $Toast } = require('../../../static/iview/base/index');
 
 export default {
   data() {
@@ -217,45 +222,25 @@ export default {
       flag:false,
       src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
       stars: [1, 2, 3, 4],
-      pingfenList:[
-        {
-          name:'岁月清风',
-          id:1,
-          stat:4,
-          time:'2018.09.30',
-          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
-          img:[]
-        },
-        {
-          name:'岁月清风',
-          id:1,
-          stat:4,
-          time:'2018.09.30',
-          content:'好吃好吃，麻辣烫很好吃，味道很棒，下次好来，还要推荐朋友来吃',
-          img:[]
-        }
-      ],
+      pingfenList:[],
       tags:[
         {
           type:'满',
-          name:'满20减5，满35减10，满40减15，满100减30',
+          name:'',
           id:1
         },
         {
           type:'新',
-          name:'本店新客立减2元',
+          name:'',
           id:2
         },
         {
           type:'折',
-          name:'单品折扣',
+          name:'',
           id:3
         }
       ],
       shipPic:[
-        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
-        // 'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg'
       ],
       obj:{},
       Comment:{},
@@ -278,7 +263,8 @@ export default {
       isNew:null,
       objCopy:null,
       goodsIds:[],
-      goodsIdses:null
+      goodsIdses:null,
+      userId:null
     }
   },
   computed: {
@@ -356,6 +342,7 @@ export default {
               obj.XjRoom=0
             }
             obj.index=this.index
+            obj.img=item.goodsPic
             obj.lengs=[]
             obj.goodsTitle=item.goodsTitle
             obj.goodsId=item.id
@@ -403,8 +390,11 @@ export default {
       })
       // 商品总价（不含活动）
       this.PriceAll=this.priceOut+this.Packing
-      this.prices=this.PriceAll
-      this.manjianF()
+      this.prices=parseFloat(this.PriceAll).toFixed(2)
+      if(this.manjian){
+        this.manjianF()
+      }
+
 
     },
     manjianF(){
@@ -429,6 +419,10 @@ export default {
     seleced(item,index){
       this.spanselect=index
     },
+    fcClose(){
+      this.flag1=false
+      this.selectObj=null
+    },
     sure(obj){
       var obj=JSON.parse(JSON.stringify(obj))
       var index=this.spanselect
@@ -446,6 +440,7 @@ export default {
         obj.specList[index].priceRoom=obj.specList[index].priceRoom/100
       }
       obj.specList[index].lengs=[]
+      obj.specList[index].img=obj.goodsPic
       obj.specList[index].goodsPackAmount=obj.specList[index].goodsPackAmount/100
       obj.specList[index].goodsTitle=obj.goodsTitle+'('+obj.specList[index].title+')'
       obj.specList[index].index=this.index
@@ -463,34 +458,68 @@ export default {
       // this.spanselect=0
     },
     jiesuan(){
-      // var shopId=this.$root.$mp.query.id
-      // var type=1
-      // var userId=this.$store.state.me.userInfo.id
-      // var packPrice=(this.Packing*100).toFixed(0)
-      // var sendPrice=this.shopInfo.shopSendPrice
-      // var shopTitle=this.$store.state.home.shopTitle
-      // var sendType='1'
-      // var userName='fwq'
-      // var userPhone=12345677
-      // var userAddress='11234234234'
-      // var payPrice=(this.prices*100).toFixed(0)
-      // var activityIds=''
-      // if(this.new!==''){
-      //   activityIds+=`1-${(this.new*100).toFixed(0)},`
-      // }else if(this.arr!==''){
-      //   activityIds+=`2-${(this.arr.j2*100).toFixed(0)}-${(this.arr.j1*100).toFixed(0)}-${(this.arr.j2*100).toFixed(0)},`
-      // }
-      // var xj=0
-      // this.objAll.forEach((item,index)=>{
-      //   xj+=item.XjOut
-      // })
-      // if(xj>0){
-      //   activityIds+=`3-${(xj*100).toFixed(0)}`
-      // }
+      if(!this.userId){
+        $Toast({
+          content: '请先登录',
+          type: 'warning'
+        });
+        return
+      }
+      var objs={}
+      objs.userId=this.userId
+      objs.shopId=this.$root.$mp.query.id
+      objs.type=1
+      // objs.userId=this.$store.state.me.userInfo.id
+      objs.packPrice=(this.Packing*100).toFixed(0)
+      objs.sendPrice=this.shopInfo.shopSendPrice
+      objs.shopTitle=this.$store.state.home.shopTitle
+      objs.sendType='1'
+      objs.userName='fwq'
+      objs.userPhone=12345677
+      objs.userAddress='11234234234'
+      objs.payPrice=(this.prices*100).toFixed(0)
+      if(this.arr!==''&&this.arr){
+        objs.jian=this.arr.j2
+      }else{
+        objs.jian=0
+      }
+      if(this.isNew){
+        objs.new=this.new
+      }else{
+        objs.new=0
+      }
+      var activityIds=''
+      if(this.new!==''&&this.new){
+        activityIds+=`1-${(this.new*100).toFixed(0)},`
+      }else if(this.arr!==''&&this.arr){
+        activityIds+=`2-${(this.arr.j2*100).toFixed(0)}-${(this.arr.j1*100).toFixed(0)}-${(this.arr.j2*100).toFixed(0)},`
+      }
+      var xj=0
+      this.objAll.forEach((item,index)=>{
+        xj+=item.XjOut
+      })
+      if(xj>0){
+        activityIds+=`3-${(xj*100).toFixed(0)}`
+        objs.xj=xj
+      }
+      objs.activityIds=activityIds
+      var _this=this
       this.objCopy=JSON.parse(JSON.stringify(this.objAll))
       this.goodsIds=[]
       this.eachInfo()
       var goodsIds=this.goodsIdses
+      objs.goodsIds=goodsIds
+      wx.setStorage({
+        key:"shopData",
+        data:_this.goodsIds
+      })
+      objs.shopName=this.shopInfo.shopTitle
+      wx.setStorage({
+        key:"shopOther",
+        data:objs
+      })
+      // this.$store.commit('submitData',this.goodsIds)
+      // this.$store.commit('submitOther',this.shopInfo.shopTitle)
       // var mark=''
       // createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds,goodsIds,mark).then(response=>{
       //
@@ -500,6 +529,7 @@ export default {
     // 选择商品类型归类
     eachInfo(){
       if(this.objCopy.length>0){
+        // 先归类
         var num=this.objCopy.shift()
         this.objCopy.forEach((item,index)=>{
           if(num.goodsId===item.goodsId&&num.priceOut===item.priceOut){
@@ -522,7 +552,7 @@ export default {
         }
         this.eachInfo()
       }else{
-        console.log(this.goodsIds)
+        // 后计算
         var num=[]
         this.goodsIds.forEach((item,index)=>{
           var str=''
@@ -540,14 +570,22 @@ export default {
     itemClick(item ,index) {
     },
     getQuery(){
-      let id=this.$root.$mp.query.id
+      var id=this.$root.$mp.query.id
+      var _this=this
       this.obj.shopId=id
       this.obj.goodsTypeId=null
       this.obj.pageNum=1
       this.obj.pageSize=5000
       this.getGoodsTypeList(id)
       this.getCommentList(id)
-      this.getShops(id)
+      if(wx.getStorageSync('userInfo')){
+        _this.userId=wx.getStorageSync('userInfo').id
+        _this.getShops(id,_this.userId)
+      }else{
+        _this.userId=null
+        _this.getShops(id,_this.userId)
+      }
+      // console.log(this.userId)
       this.getList(this.obj)
     },
     // 商品列表
@@ -561,6 +599,7 @@ export default {
             item.priceOut=item.priceOut/100
             item.goodsPackAmount=item.goodsPackAmount/100
             if(item.goodsPriceDis){
+              this.tags[2].name='单品折扣'
               item.goodsPriceDis=item.goodsPriceDis/100
             }
           })
@@ -584,14 +623,16 @@ export default {
       this.Comment.pageNum=1
       this.Comment.pageSize=10
       commentList(this.Comment).then(response=>{
-
+        if(response.data.returnObject){
+          this.pingfenList=response.data.returnObject.list
+        }
       })
     },
     // 获取店铺详情
-    getShops(id){
+    getShops(id,wxUserId){
       var longitude= this.$store.state.home.longitude
       var latitude= this.$store.state.home.latitude
-      getShop(id,latitude,longitude).then(response=>{
+      getShop(id,wxUserId,latitude,longitude).then(response=>{
        if(response.data.returnObject){
          this.shopInfo=response.data.returnObject
          if(this.shopInfo.isNewUser==='y'){
@@ -599,7 +640,7 @@ export default {
          }else{
            this.isNew=false
          }
-         if(this.shopInfo.atList.length>0){
+         if(this.shopInfo.atList){
            var atList=this.shopInfo.atList
            var num=[]
            var num1=[]
@@ -608,6 +649,7 @@ export default {
              if(item.activityType==1){
                str='新用户立减'+(item.content/100)
                this.new=item.content/100
+               this.tags[1].name=str
              }else{
                this.new=''
              }
@@ -620,8 +662,10 @@ export default {
                  num1.push(obj)
                  if(index===con.length-1){
                    str+=`满${(item.split('-')[0]/100)}减${(item.split('-')[1]/100)}`
+                   this.tags[0].name=str
                  }else{
                    str+=`满${(item.split('-')[0]/100)}减${(item.split('-')[1]/100)},`
+                   this.tags[0].name=str
                  }
 
                })
@@ -631,7 +675,6 @@ export default {
            this.Discount=num
            this.manjian=num1
            console.log(this.manjian)
-           console.log(this.new)
          }
        }
       })
@@ -1007,10 +1050,19 @@ export default {
     flex-direction: column;
     position: fixed;
     bottom: 0;
-    height: 182rpx;
+    height: 142rpx;
     background-color: #333;
     z-index: 990;
     width: 100%;
+    .fc{
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
     .zhezhao{
       display: block;
       position: fixed;

@@ -5,9 +5,8 @@
       <img v-if="userInfo"  :src="userInfo.headPic" alt="">
       <img v-if="!userInfo"  :src="errorImg01" alt="">
       <div class="info-c">
-        <!--<span class="name">fengwenqi</span>-->
-        <!--<span class="phone">15214313256</span>-->
-        <p class="login"  v-if="!userInfo" @click="login">登录/注册</p>
+        <!--<p   @click="login">登录/注册</p>-->
+        <button v-if="!userInfo" class="login" open-type="getUserInfo" @getuserinfo="login">授权登录</button>
         <p class="username" v-if="userInfo">{{userInfo.nickName}}</p>
       </div>
     </div>
@@ -19,7 +18,7 @@
           <span class="amount" v-if="item.amount">{{item.amount}}<span>张</span></span>
         </div>
         <i class='icon mt-arrow-right-o' v-if="!item.phone"></i>
-        <i  v-if="item.phone">{{item.phone}}</i>
+        <i  v-if="item.phone" @click="call(item.phone)">{{item.phone}}</i>
       </div>
     </div>
     <div class="btn"  v-if="userInfo" @click="logoutClick">退出账号</div>
@@ -54,13 +53,19 @@ export default {
           title: '意见反馈',
           icon: 'mt-help-o',
           path: '/pages/feedback/main',
-          flag:true
+          flag:false
         },
         {
           title: '协议和说明',
           icon: 'mt-protocol-o',
           path: '/pages/protocol/main',
           flag:true
+        },
+        {
+          title: '商家入驻',
+          icon: 'mt-business1-o',
+          path: '/pages/alert/main',
+          flag:false
         }],
       userInfo:null,
       errorImg01:'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJvoc0l3Oe4lWTMtUvLd7UYm9IvSWNjM6S5ibZBu3OE5XbCEqgPw9llpibmkyqEX9GbLKOCfTIe6wWQ/132'
@@ -73,6 +78,14 @@ export default {
     this.getUserId()
   },
   methods: {
+    call(phone){
+      wx.makePhoneCall({
+        phoneNumber: phone
+      })
+    },
+    bindGetUserInfo (e) {
+      console.log(e.detail.userInfo)
+    },
     getUserId(){
       var _this=this
       wx.getStorage({
@@ -82,18 +95,16 @@ export default {
           _this.userInfo=res.data
           if(res.data){
             _this.itemList[0].flag=true
+            _this.itemList[5].flag=true
+            _this.itemList[3].flag=true
+            _this.$store.commit('submitUserInfo',_this.userInfo)
           }else{
             _this.itemList[0].flag=false
+            _this.itemList[5].flag=false
+            _this.itemList[3].flag=false
           }
         }
       })
-      // if(userInfo.id){
-      //   console.log(111)
-      //   this.userInfo=userInfo
-      //   this.itemList[0].flag=true
-      // }else{
-      //   this.itemList[0].flag=false
-      // }
     },
     itemClick(e) {
       wx.navigateTo({url: e.path})
@@ -122,7 +133,6 @@ export default {
       wx.login({
         success (res) {
           if (res.code) {
-            console.log(res.code)
             _this.getSetting(res.code)
           }
         }
@@ -132,11 +142,14 @@ export default {
       var _this=this
       wx.getSetting({
         success: function(res1){
-          if (res1.authSetting['scope.userInfo']) {
+          if (res1.authSetting["scope.userInfo"]) {
             wx.getUserInfo({
               success: function(rest) {
-                console.log(rest)
                     getUserInfos(code,rest.iv,rest.encryptedData).then(response=>{
+                      wx.setStorage({
+                        key:"wxToken",
+                        data:response.headers.wxtoken[0]
+                      })
                       _this.userInfo=response.data.returnObject
                       _this.$store.commit('submitUserInfo',_this.userInfo)
                       wx.setStorage({
@@ -150,31 +163,12 @@ export default {
               }
             })
           }else{
+            console.log(222)
             console.log('用户还未授权过')
           }
         }
       })
     }
-    // getUserInfo1(){
-    //   console.log('click事件首先触发')
-    //   // 判断小程序的API，回调，参数，组件等是否在当前版本可用。  为false 提醒用户升级微信版本
-    //   // console.log(wx.canIUse('button.open-type.getUserInfo'))
-    //   if(wx.canIUse('button.open-type.getUserInfo')){
-    //     // 用户版本可用
-    //   }else{
-    //     console.log('请升级微信版本')
-    //   }
-    // },
-    // bindGetUserInfo(e) {
-    //   // console.log(e.mp.detail.rawData)
-    //   if (e.mp.detail.rawData){
-    //     //用户按了允许授权按钮
-    //     console.log('用户按了允许授权按钮')
-    //   } else {
-    //     //用户按了拒绝按钮
-    //     console.log('用户按了拒绝按钮')
-    //   }
-    // }
   }
 }
 </script>
@@ -189,7 +183,11 @@ export default {
     .login{
       color: #fff;
       font-size: 28rpx;
+      background: none;
+      outline:none;
+      border: none;
     }
+    button::after{ border: none; }
     .username{
       font-size: 28rpx;
       color: #fff;

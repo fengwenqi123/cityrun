@@ -15,7 +15,7 @@
       <swiper class="ad-c" indicator-dots="true" indicator-color="#999" indicator-active-color="#FFC24A" autoplay="true">
         <block v-for="(item, index) in topBannerData" :key="index">
           <swiper-item>
-            <img class="ad-img" :src="item.banner_pic_url">
+            <img class="ad-img" :src="item.adPic">
           </swiper-item>
         </block>
       </swiper>
@@ -62,12 +62,12 @@
             <div class="mid">
               <p>{{item.shopTitle}}</p>
               <div class="rate">
-                <i-rate :value="item.avgStar"></i-rate>
+                <i-rate :value="item.avgStar" :size="14"></i-rate>
                 <span>{{item.avgStar}}分</span>
                 <span>月售{{item.orderCount}}</span>
               </div>
               <div class="qisong">
-                <span>起送:￥{{item.shopSendMinprice}}</span>
+                <span>起送:￥{{item.shopSendMinprice/100}}</span>
                 <span>配送:￥{{item.shopSendPrice/100}}</span>
               </div>
               <div class="new" v-if="item.atList.length>0" v-for="(item_1,index_1) in item.atList" :key="index_1">
@@ -118,19 +118,17 @@
 import {queryHomeHeadCategory} from '@/action/action'
 import {homeData} from './data'
 import {mapMutations, mapGetters } from "vuex"
-import {ShopLists} from '@/api/home.js'
+import {ShopLists,getBannerList} from '@/api/home.js'
 
 export default {
   data() {
     return {
       categoryArr: [{items: []}, {items: []}],
       topBannerData: [],
-      bottomBanner: {},
       active:0,
       src:'http://img3.imgtn.bdimg.com/it/u=3360690558,3623061169&fm=11&gp=0.jpg',
       active1:null,
       active2:null,
-      shopsList: [],
       flag:false,
       flag_com:false,
       address:null,
@@ -250,24 +248,24 @@ export default {
     wxGetLocation(){
       let _this = this;
       wx.getLocation({
-        // type: 'wgs84',
+        type: 'gcj02',
         success: function (res) {
           let latitude,longitude;
           latitude = res.latitude.toString();
           longitude = res.longitude.toString();
+          console.log(longitude)
           wx.request({
             header:{
               "Content-Type": "application/text"
             },
             url:'https://apis.map.qq.com/ws/geocoder/v1/?location='+latitude+','+longitude+'&key=MVGBZ-R2U3U-W5CVY-2PQID-AT4VZ-PDF35',
             success: function(res) {
-              _this.address=res.data.result.address_component.street_number
+              _this.address=res.data.result.address_reference.landmark_l2.title
               console.log(res.data)
                 _this.obj.latitude = res.data.result.location.lat,
                 _this.obj.longitude=res.data.result.location.lng,
-                // _this.obj.latitude ='30.266561'
-                // _this.obj.longitude='119.958444'
-                _this.obj.isRecommend=null,
+                _this.obj.isRecommend=null
+                _this.obj.address=res.data.result.address_reference.landmark_l2.title
                 _this.obj.queryType=1,
                 _this.obj.pageNum=1,
                 _this.obj.pageSize=10
@@ -294,21 +292,29 @@ export default {
           })
         }
       })
+    },
+    getBannerLists(){
+      getBannerList().then(response=>{
+        if(response.data.returnObject){
+          this.topBannerData=response.data.returnObject.list
+        }
+      })
     }
   },
   mounted() {
     this.wxGetLocation()
-    var categoryData = homeData.headData.data.primary_filter;
-    categoryData.map((item, index) => {
-      if (index < 10) {
-        this.categoryArr[0].items.push(item)
-      } else {
-         this.categoryArr[1].items.push(item)
-      }
-    })
-    this.topBannerData = homeData.topBannerData.data.top_banner_list
-    this.bottomBanner = homeData.bannerData.data.rcmd_board_v9.mid_ad_banner.platinum_banner
-    this.shopsList = homeData.homeList.data.poilist
+    this.getBannerLists()
+    // var categoryData = homeData.headData.data.primary_filter;
+    // categoryData.map((item, index) => {
+    //   if (index < 10) {
+    //     this.categoryArr[0].items.push(item)
+    //   } else {
+    //      this.categoryArr[1].items.push(item)
+    //   }
+    // })
+    // this.topBannerData = homeData.topBannerData.data.top_banner_list
+    // this.bottomBanner = homeData.bannerData.data.rcmd_board_v9.mid_ad_banner.platinum_banner
+    // this.shopsList = homeData.homeList.data.poilist
   },
   onLoad(){
     Object.assign(this.$data, this.$options.data())
@@ -418,7 +424,7 @@ export default {
       display: flex;
       height: 400rpx;
       background-color: white;
-      margin: 20rpx;
+      margin-top: 80rpx;
       .ad-img {
         height: 400rpx;
         width: 100%;
@@ -544,9 +550,12 @@ export default {
         }
       }
       .active1{
-        color: #000;
+        color: #2d8cf0;
         font-weight: bold;
         font-size: 30rpx;
+        span{
+          color: #2d8cf0!important;
+        }
       }
       .com{
         position: absolute;

@@ -9,6 +9,9 @@ const getters = {
   latitude: state => state.home.latitude,
   longitude: state => state.home.longitude,
   userInfo: state => state.me.userInfo,
-  addressInfo: state => state.address.addressInfo
+  id: state => state.me.id,
+  addressInfo: state => state.address.addressInfo,
+  shopData: state => state.shop.shopData,
+  shopName: state => state.shop.shopName
 }
 export default getters

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "备注",
+  "usingComponents": {
+    "i-radio-group": "../../../static/iview/radio-group/index",
+    "i-radio": "../../../static/iview/radio/index",
+    "i-message": "../../../static/iview/message/index"
+  }
+}

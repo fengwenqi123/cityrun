@@ -24,7 +24,8 @@
     </div>
     <div class="house-num">
       <span>详细地址：</span>
-      <input v-model="forms.addressInfo" placeholder="详细地址，例：16号楼5楼301室" placeholder-style="font-size: 24rpx" auto-focus/>
+      <input  v-model="forms.addressInfo1" placeholder="请输入详细地址" />
+      <!--<input v-model="forms.addressInfo" placeholder="详细地址，例：16号楼5楼301室" placeholder-style="font-size: 24rpx" auto-focus/>-->
     </div>
     <div class="submit" v-if="!flag"  @click="submits()">
       <span>保存地址</span>
@@ -52,7 +53,7 @@ export default {
         province:null,
         city:null,
         area:null,
-        addressInfo:null,
+        addressInfo1:null,
         longitude:null,
         latitude:null,
         gender:null
@@ -66,7 +67,8 @@ export default {
       var _this=this
       wx.chooseLocation({
         success: function (res) {
-          _this.information.address=res.name
+          console.log(res)
+          _this.information.address=res.address
           _this.forms.latitude=res.latitude
           _this.forms.longitude=res.longitude
           _this.forms.address_info=res.address
@@ -120,7 +122,18 @@ export default {
       })
     },
     submits(){
-      submitAddress(this.forms).then(response=>{
+      var obj={}
+      obj.userId=this.forms.userId
+      obj.userName=this.forms.userName
+      obj.mobilePhone=this.forms.mobilePhone
+      obj.province=this.forms.province
+      obj.city=this.forms.city
+      obj.area=this.forms.area
+      obj.addressInfo=`${this.forms.address_info}${this.forms.addressInfo1}`
+      obj.longitude=this.forms.longitude
+      obj.latitude=this.forms.latitude
+      obj.gender=this.forms.gender
+      submitAddress(obj).then(response=>{
         if(response.data.resultCode===1000){
           $Message({
             content: '保存成功',
@@ -216,6 +229,8 @@ export default {
     }
     input {
       flex: 1;
+      height: 46rpx;
+      line-height: 46rpx;
     }
   }
   .address {
@@ -265,6 +280,8 @@ export default {
     }
     input {
       flex: 1;
+      height: 46rpx;
+      line-height: 46rpx;
     }
   }
   .submit {

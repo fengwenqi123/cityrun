@@ -5,3 +5,6 @@ export function ShopLists(obj) {
   const data = qs.stringify(obj)
   return fly.post("xshop/getShopsList", data)
 }
+export function getBannerList() {
+  return fly.post("xad/getBannerList")
+}

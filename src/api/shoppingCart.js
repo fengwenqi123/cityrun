@@ -25,9 +25,9 @@ export function GoodsTypeList(shopId) {
   })
 }
 
-export function getShop(id, latitude, longitude) {
+export function getShop(id, wxUserId, latitude, longitude) {
   const data = qs.stringify({
-    id, latitude, longitude
+    id, wxUserId, latitude, longitude
   })
   return fly.request("xshop/getShopById", data, {
     method: "post",
@@ -35,23 +35,8 @@ export function getShop(id, latitude, longitude) {
   })
 }
 
-export function createOrder(shopId, type, userId, packPrice, sendPrice, shopTitle, sendType, userName, userPhone, userAddress, payPrice, activityIds, goodsIds,mark) {
-  const data = qs.stringify({
-    shopId,
-    type,
-    userId,
-    packPrice,
-    sendPrice,
-    shopTitle,
-    sendType,
-    userName,
-    userPhone,
-    userAddress,
-    payPrice,
-    activityIds,
-    goodsIds,
-    mark
-  })
+export function createOrder(obj) {
+  const data = qs.stringify(obj)
   return fly.request("xorder/createOrdersInfo", data, {
     method: "post",
     timeout: 5000 //超时设置为5s
